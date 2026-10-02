@@ -1,0 +1,22 @@
+# Project: call
+# Cross-compile 32-bit Windows app on macOS with MinGW-w64
+
+CPP      = i686-w64-mingw32-g++
+OBJ      = main.o appres.o
+LIBS     = -lcomctl32 -lgdi32 -lpsapi -static -mwindows
+CXXFLAGS = -O2 -finput-charset=gbk -fexec-charset=gbk
+BIN      = call.exe
+RM       = rm -f
+
+.PHONY: all clean
+
+all: $(BIN)
+
+clean:
+	$(RM) main.o $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(OBJ) -o "$(BIN)" $(LIBS)
+
+main.o: main.cpp main.h data.h defines.h
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
