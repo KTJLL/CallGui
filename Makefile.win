@@ -1,22 +1,34 @@
 # Project: call
-# Cross-compile 32-bit Windows app on macOS with MinGW-w64
-
 CPP      = i686-w64-mingw32-g++
-OBJ      = main.o appres.o
-LIBS     = -lcomctl32 -lgdi32 -lpsapi -static -mwindows
-CXXFLAGS = -O2 -finput-charset=gbk -fexec-charset=gbk
+WINDRES  = i686-w64-mingw32-windres
 BIN      = call.exe
+
+# make 生成的对象（clean 要删）
+SRCS     = main.cpp getdata.cpp
+OBJS     = $(SRCS:.cpp=.o)
+
+# 由 .rc 编译出来的对象（clean 可以删，因为能重建）
+RES_OBJS = appres.o
+
+ALL_OBJS = $(OBJS) $(RES_OBJS)
+
+CXXFLAGS = -O0 -finput-charset=utf-8 -fexec-charset=gbk -g
+LIBS     = -lcomctl32 -lgdi32 -lpsapi -static -mconsole
 RM       = rm -f
 
 .PHONY: all clean
 
 all: $(BIN)
 
+$(BIN): $(ALL_OBJS)
+	$(CPP) $(ALL_OBJS) -o "$(BIN)" $(LIBS)
+
+%.o: %.cpp
+	$(CPP) -c $< -o $@ $(CXXFLAGS)
+
+# 用 app.rc 生成 appres.o
+appres.o: app.rc app.manifest
+	$(WINDRES) app.rc -o appres.o -O coff
+
 clean:
-	$(RM) main.o $(BIN)
-
-$(BIN): $(OBJ)
-	$(CPP) $(OBJ) -o "$(BIN)" $(LIBS)
-
-main.o: main.cpp main.h data.h defines.h
-	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+	$(RM) $(OBJS) $(RES_OBJS) $(BIN)

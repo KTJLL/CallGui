@@ -1,3 +1,6 @@
+#ifndef _MAIN_H
+#define _MAIN_H_
+
 #include <windows.h>
 #include <ntsecapi.h>
 #include <commctrl.h>
@@ -108,15 +111,12 @@ enum {
 #define CTL_CODE_QUERY_OBJECT_TYPE_CALLBACK CTL_CODE(FILE_DEVICE_UNKNOWN, QUERY_OBJECT_TYPE_CALLBACK_IOCTL_BASE, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
 
-HANDLE hSys = INVALID_HANDLE_VALUE;
-HWND hThreadWnd, hMainWnd, hHandleWnd, hWindowWnd, hModuleWnd, hInfoTextWnd;
-ULONG64 dwCurrentPID = 0;
+extern HANDLE hSys;
+extern HWND hThreadWnd, hMainWnd, hHandleWnd, hWindowWnd, hModuleWnd, hInfoTextWnd;
+extern ULONG64 dwCurrentPID;
 /*HFONT Font = CreateFont(-9, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
                         CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "MS Shell Dlg");*/
-HFONT Font = CreateFont(-12, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-                        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                        CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                        DEFAULT_PITCH | FF_DONTCARE, "Sim Sun");
+extern HFONT Font;
 
 //#pragma pack(push, 8)
 typedef struct _PROCESS_INFO {
@@ -263,3 +263,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void ReleaseReg(HKEY hKey);
 LRESULT CALLBACK WndPageKernelHookProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL QuerySSDTFunctions(HWND hwndListView);
+BOOL GetOriginDataFromNtOsKrnlImage();
+BOOL GetOriginSSSDTData();
+
+#endif

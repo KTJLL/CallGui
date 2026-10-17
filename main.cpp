@@ -13,6 +13,16 @@
 #include "defines.h"
 #include "main.h"
 
+HANDLE hSys = INVALID_HANDLE_VALUE;
+HWND hThreadWnd, hMainWnd, hHandleWnd, hWindowWnd, hModuleWnd, hInfoTextWnd;
+ULONG64 dwCurrentPID = 0;
+/*HFONT Font = CreateFont(-9, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                        CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "MS Shell Dlg");*/
+HFONT Font = CreateFont(-12, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                        CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+                        DEFAULT_PITCH | FF_DONTCARE, "Sim Sun");
+
 ULONG64 GetDwordByISelectItem(HWND hwnd, int iSelectItem, int iSubItem) {
 	CHAR szPID[260];
 	LVITEM lvi = {0};
@@ -75,11 +85,11 @@ BOOL ShowWindowWithLock(HWND hwndCur, HWND hwndTar, LPCSTR name1, LPCSTR name2, 
 	EnableWindow(hwndCur, FALSE);
 	SetForegroundWindow(hwndTar);
 	CHAR Full[MAX_PATH], temp1[MAX_PATH];
-	sprintf(temp1, "[%ld]µÄ", dwID);
+	sprintf(temp1, "[%ld]çš„", dwID);
 	strcpy(Full, name1);
 	strcat(Full, temp1);
 	strcat(Full, name2);
-	strcat(Full, "ĞÅÏ¢");
+	strcat(Full, "ä¿¡æ¯");
 	SetWindowText(hwndTar, Full);
 	return TRUE;
 }
@@ -137,7 +147,7 @@ BOOL QueryProcess(HWND hwndListView) {
 	lvi.iItem = 0;
 	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_PROCESS, NULL, 0, (PVOID)pQpin, size, &dwReturn, NULL)) {
 		free(pQpin);
-		SetWindowText(hInfoTextWnd, "½ø³Ì: 0");
+		SetWindowText(hInfoTextWnd, "è¿›ç¨‹: 0");
 		ShowWindow(hwndListView, SW_SHOW);
 		printf("[ ERROR ] Cannot communicate with the driver! Use %.0f ms\n", difftime(clock(), time));
 		return FALSE;
@@ -167,7 +177,7 @@ BOOL QueryProcess(HWND hwndListView) {
 		bOldImage = TRUE;
 	}*/
 	while (index < pQpin->numberOfProcess) {
-		lviw.pszText = pQpin->ProcessInformation[index].imageName;	// Ó³ÏñÃû³Æ+Ğ¡Í¼±ê
+		lviw.pszText = pQpin->ProcessInformation[index].imageName;	// æ˜ åƒåç§°+å°å›¾æ ‡
 		hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pQpin->ProcessInformation[index].dwPID);
 		GetProcessFullImageName(hProcess, QueryFullProcessImageNameA, ImagePath, MAX_PATH);
 		AddProcessImageList(hImageList, hProcess, QueryFullProcessImageNameA, ImagePath);
@@ -179,12 +189,12 @@ BOOL QueryProcess(HWND hwndListView) {
 		lvi.pszText = Buffer;
 		SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 
-		lvi.iSubItem ++;	// ¸¸PID
+		lvi.iSubItem ++;	// çˆ¶PID
 		sprintf(Buffer, "%ld", pQpin->ProcessInformation[index].ParentPID);
 		//lvi.pszText = Buffer;
 		SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 
-		lvi.iSubItem ++;	// Ó³ÏñÂ·¾¶
+		lvi.iSubItem ++;	// æ˜ åƒè·¯å¾„
 		lvi.pszText = ImagePath;
 		SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 
@@ -199,7 +209,7 @@ BOOL QueryProcess(HWND hwndListView) {
 		lvi.iItem ++;
 	}
 	CHAR TextBuffer[MAX_PATH];
-	sprintf(TextBuffer, "½ø³Ì: %d", pQpin->numberOfProcess);
+	sprintf(TextBuffer, "è¿›ç¨‹: %d", pQpin->numberOfProcess);
 	SetWindowText(hInfoTextWnd, TextBuffer);
 	free(pQpin);
 	ShowWindow(hwndListView, SW_SHOW);
@@ -263,7 +273,7 @@ BOOL QuerySSDTFunctions(HWND hwndListView) {
 	SendMessage(hwndListView, LVM_DELETEALLITEMS, 0, 0);
 	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_SSDT_DATA, (PVOID)&ssdtnumbers, sizeof(DWORD64), (PVOID)&pQsin, sizeof(QUERY_SSDT_INFORMATION), &dwReturn, NULL)) {
 		//free(pQsin);
-		SetWindowText(hInfoTextWnd, "SSDTº¯Êı: 0 ±»¹Ò¹³º¯Êı: 0");
+		SetWindowText(hInfoTextWnd, "SSDTå‡½æ•°: 0 è¢«æŒ‚é’©å‡½æ•°: 0");
 		ShowWindow(hwndListView, SW_SHOW);
 		return FALSE;
 	}
@@ -304,7 +314,7 @@ BOOL QuerySSDTFunctions(HWND hwndListView) {
 		lvi.iItem ++;
 	}
 	//free(pQsin);
-	sprintf(Buffer, "SSDTº¯Êı: %d ±»¹Ò¹³º¯Êı: %d", SSDT_NUMBERS, hookedCount);
+	sprintf(Buffer, "SSDTå‡½æ•°: %d è¢«æŒ‚é’©å‡½æ•°: %d", SSDT_NUMBERS, hookedCount);
 	SetWindowText(hInfoTextWnd, Buffer);
 	ShowWindow(hwndListView, SW_SHOW);
 	return TRUE;
@@ -317,7 +327,7 @@ BOOL QuerySSSDTFunctions(HWND hwndListView) {
 	ShowWindow(hwndListView, SW_HIDE);
 	SendMessage(hwndListView, LVM_DELETEALLITEMS, 0, 0);
 	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_SSSDT_DATA, (PVOID)&sssdtnumbers, sizeof(DWORD64), (PVOID)&pQsin, sizeof(QUERY_SSSDT_INFORMATION), &dwReturn, NULL)) {
-		SetWindowText(hInfoTextWnd, "SSSDTº¯Êı: 0 ±»¹Ò¹³º¯Êı: 0");
+		SetWindowText(hInfoTextWnd, "SSSDTå‡½æ•°: 0 è¢«æŒ‚é’©å‡½æ•°: 0");
 		ShowWindow(hwndListView, SW_SHOW);
 		return FALSE;
 	}
@@ -360,7 +370,7 @@ BOOL QuerySSSDTFunctions(HWND hwndListView) {
 		
 	}
 	//free(pQsin);
-	sprintf(Buffer, "SSSDTº¯Êı: %d ±»¹Ò¹³º¯Êı: %d", SSSDT_NUMBERS, hookedCount);
+	sprintf(Buffer, "SSSDTå‡½æ•°: %d è¢«æŒ‚é’©å‡½æ•°: %d", SSSDT_NUMBERS, hookedCount);
 	SetWindowText(hInfoTextWnd, Buffer);
 	ShowWindow(hwndListView, SW_SHOW);
 	return TRUE;
@@ -372,7 +382,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 	ShowWindow(hwndListView, SW_HIDE);
 	SendMessage(hwndListView, LVM_DELETEALLITEMS, 0, 0);
 	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_OBJECT_TYPE_CALLBACK, NULL, 0, (PVOID)&pQoin, sizeof(QUERY_OBJECT_TYPE_CALLBACK_INFORMATION), &dwReturn, NULL)) {
-		SetWindowText(hInfoTextWnd, "ObjectHook¸öÊı: 0 ObjectType_Callback¸öÊı: 0");
+		SetWindowText(hInfoTextWnd, "ObjectHookä¸ªæ•°: 0 ObjectType_Callbackä¸ªæ•°: 0");
 		ShowWindow(hwndListView, SW_SHOW);
 		return FALSE;
 	}
@@ -437,7 +447,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 	}
 	
 	//free(pQsin);
-	sprintf(Buffer, "ObjectHook¸öÊı: %d ObjectType_Callback¸öÊı: %d", 0, (ULONG)pQoin.numberOfCallbacks);
+	sprintf(Buffer, "ObjectHookä¸ªæ•°: %d ObjectType_Callbackä¸ªæ•°: %d", 0, (ULONG)pQoin.numberOfCallbacks);
 	SetWindowText(hInfoTextWnd, Buffer);
 	ShowWindow(hwndListView, SW_SHOW);
 	return TRUE;
@@ -449,11 +459,11 @@ LRESULT CALLBACK WndPageSSDTProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom == ID_SSDT_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "»Ö¸´");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "·´»ã±àÔ­Ê¼µØÖ·");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "·´»ã±àµ±Ç°µØÖ·");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "æ¢å¤");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "åæ±‡ç¼–åŸå§‹åœ°å€");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "åæ±‡ç¼–å½“å‰åœ°å€");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -483,11 +493,11 @@ LRESULT CALLBACK WndPageSSSDTProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom == ID_SSSDT_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "»Ö¸´");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "·´»ã±àÔ­Ê¼µØÖ·");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "·´»ã±àµ±Ç°µØÖ·");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "æ¢å¤");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "åæ±‡ç¼–åŸå§‹åœ°å€");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "åæ±‡ç¼–å½“å‰åœ°å€");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -517,11 +527,11 @@ LRESULT CALLBACK WndPageObjectHook(HWND hwnd, UINT Message, WPARAM wParam, LPARA
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom == 0 && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "»Ö¸´");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "·´»ã±àÔ­Ê¼µØÖ·");
-				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "·´»ã±àµ±Ç°µØÖ·");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "æ¢å¤");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "åæ±‡ç¼–åŸå§‹åœ°å€");
+				AppendMenu(hMenu, MF_STRING | MF_DISABLED, 0, "åæ±‡ç¼–å½“å‰åœ°å€");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -595,18 +605,18 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom == ID_PROCESS_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ(&R)");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°(&R)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_TERMINATE, "½áÊø(&T)");
-				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_FORCE_TERMINATE, "Ç¿ÖÆ½áÊø(&F)");
-				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_LOCK, "Ëø¶¨(&L)");
-				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_SUSPEND, "¹ÒÆğ(&S)");
-				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_RESUME, "»Ö¸´(&E)");
+				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_TERMINATE, "ç»“æŸ(&T)");
+				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_FORCE_TERMINATE, "å¼ºåˆ¶ç»“æŸ(&F)");
+				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_LOCK, "é”å®š(&L)");
+				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_SUSPEND, "æŒ‚èµ·(&S)");
+				AppendMenu(hMenu, MF_STRING, MENU_PROCESS_RESUME, "æ¢å¤(&E)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_THREAD_QUERY, "²é¿´Ïß³ÌĞÅÏ¢");
-				AppendMenu(hMenu, MF_STRING, MENU_HANDLE_QUERY, "²é¿´¾ä±úĞÅÏ¢");
-				AppendMenu(hMenu, MF_STRING, MENU_WINDOW_QUERY, "²éÑ¯´°¿ÚĞÅÏ¢");
-				AppendMenu(hMenu, MF_STRING, MENU_MODULE_QUERY, "²éÑ¯Ä£¿éĞÅÏ¢");
+				AppendMenu(hMenu, MF_STRING, MENU_THREAD_QUERY, "æŸ¥çœ‹çº¿ç¨‹ä¿¡æ¯");
+				AppendMenu(hMenu, MF_STRING, MENU_HANDLE_QUERY, "æŸ¥çœ‹å¥æŸ„ä¿¡æ¯");
+				AppendMenu(hMenu, MF_STRING, MENU_WINDOW_QUERY, "æŸ¥è¯¢çª—å£ä¿¡æ¯");
+				AppendMenu(hMenu, MF_STRING, MENU_MODULE_QUERY, "æŸ¥è¯¢æ¨¡å—ä¿¡æ¯");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -623,7 +633,7 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 				}
 				case MENU_PROCESS_TERMINATE: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª½áÊøËüÂğ£¿½áÊøÏµÍ³½ø³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦ç»“æŸå®ƒå—ï¼Ÿç»“æŸç³»ç»Ÿè¿›ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						ULONG64 dwPID = GetDwordByISelectItem(hProcessListView, iSelectItem, 1);
 						if (!dwPID) break;
 
@@ -640,13 +650,13 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 						CHAR Buffer[MAX_PATH];
 						HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwPID);
 						if (!TerminateProcess((HANDLE)hProcess, 0)) {
-							sprintf(Buffer, "½áÊø½ø³ÌÊ§°Ü! ´íÎóÂë: %d", GetLastError());
-							MessageBox(hwnd, Buffer, "½ø³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "ç»“æŸè¿›ç¨‹å¤±è´¥! é”™è¯¯ç : %d", GetLastError());
+							MessageBox(hwnd, Buffer, "è¿›ç¨‹", MB_OK | MB_ICONERROR);
 							CloseHandle(hProcess);
 							break;
 						}
 						CloseHandle(hProcess);
-						MessageBox(hwnd, "½áÊø½ø³Ì³É¹¦", "½ø³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "ç»“æŸè¿›ç¨‹æˆåŠŸ", "è¿›ç¨‹", MB_OK | MB_ICONINFORMATION);
 						//QueryProcess(hProcessListView);
 						SendMessage(hProcessListView, LVM_DELETEITEM, iSelectItem, 0);
 					}
@@ -654,7 +664,7 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 				}
 				case MENU_PROCESS_FORCE_TERMINATE: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª½áÊøËüÂğ£¿½áÊøÏµÍ³½ø³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦ç»“æŸå®ƒå—ï¼Ÿç»“æŸç³»ç»Ÿè¿›ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						ULONG64 dwPID = GetDwordByISelectItem(hProcessListView, iSelectItem, 1);
 						if (!dwPID) break;
 
@@ -666,11 +676,11 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 						DWORD dwReturn = 0;
 						CHAR Buffer[MAX_PATH];
 						if (!DeviceIoControl(hSys, CTL_CODE_TERMINATE_PROCESS, &dwPID, sizeof(ULONG64), NULL, 0, &dwReturn, NULL)) {
-							sprintf(Buffer, "Ç¿ÖÆ½áÊø½ø³ÌÊ§°Ü! ·µ»Ø×´Ì¬: %d", dwReturn);
-							MessageBox(hwnd, Buffer, "½ø³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "å¼ºåˆ¶ç»“æŸè¿›ç¨‹å¤±è´¥! è¿”å›çŠ¶æ€: %d", dwReturn);
+							MessageBox(hwnd, Buffer, "è¿›ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
-						MessageBox(hwnd, "Ç¿ÖÆ½áÊø½ø³Ì³É¹¦", "½ø³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "å¼ºåˆ¶ç»“æŸè¿›ç¨‹æˆåŠŸ", "è¿›ç¨‹", MB_OK | MB_ICONINFORMATION);
 						//QueryProcess(hProcessListView);
 						SendMessage(hProcessListView, LVM_DELETEITEM, iSelectItem, 0);
 					}
@@ -678,71 +688,71 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 				}
 				case MENU_PROCESS_LOCK: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒªËø¶¨ËüÂğ?", "", MB_YESNO) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦é”å®šå®ƒå—?", "", MB_YESNO) == IDYES) {
 						ULONG64 dwPID = GetDwordByISelectItem(hProcessListView, iSelectItem, 1);
 						if (!dwPID) break;
 
 						DWORD dwReturn = 0;
 						CHAR Buffer[MAX_PATH];
 						if (!DeviceIoControl(hSys, CTL_CODE_PROTECT_PROCESS, &dwPID, sizeof(ULONG64), NULL, 0, &dwReturn, NULL)) {
-							sprintf(Buffer, "Ëø¶¨½ø³ÌÊ§°Ü! ·µ»Ø×´Ì¬: %d", dwReturn);
-							MessageBox(hwnd, Buffer, "½ø³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "é”å®šè¿›ç¨‹å¤±è´¥! è¿”å›çŠ¶æ€: %d", dwReturn);
+							MessageBox(hwnd, Buffer, "è¿›ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
-						MessageBox(hwnd, "Ëø¶¨½ø³Ì³É¹¦", "½ø³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "é”å®šè¿›ç¨‹æˆåŠŸ", "è¿›ç¨‹", MB_OK | MB_ICONINFORMATION);
 						//QueryProcess(hProcessListView);
 					}
 					break;
 				}
 				case MENU_PROCESS_SUSPEND: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª¹ÒÆğËüÂğ?¹ÒÆğÏµÍ³½ø³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦æŒ‚èµ·å®ƒå—?æŒ‚èµ·ç³»ç»Ÿè¿›ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						ULONG64 dwPID = GetDwordByISelectItem(hProcessListView, iSelectItem, 1);
 						if (!dwPID) break;
 
 						DWORD dwReturn;
 						CHAR Buffer[MAX_PATH];
 						if (!DeviceIoControl(hSys, CTL_CODE_SUSPEND_PROCESS, &dwPID, sizeof(ULONG64), NULL, 0, &dwReturn, NULL)) {
-							sprintf(Buffer, "¹ÒÆğ½ø³ÌÊ§°Ü! ·µ»Ø×´Ì¬: %d", dwReturn);
-							MessageBox(hwnd, Buffer, "½ø³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "æŒ‚èµ·è¿›ç¨‹å¤±è´¥! è¿”å›çŠ¶æ€: %d", dwReturn);
+							MessageBox(hwnd, Buffer, "è¿›ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
-						MessageBox(hwnd, "¹ÒÆğ½ø³Ì³É¹¦", "½ø³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "æŒ‚èµ·è¿›ç¨‹æˆåŠŸ", "è¿›ç¨‹", MB_OK | MB_ICONINFORMATION);
 						QueryProcess(GetDlgItem(hwnd, ID_PROCESS_LISTVIEW));
 					}
 					break;
 				}
 				case MENU_PROCESS_RESUME: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª»Ö¸´ËüÂğ?»Ö¸´ÏµÍ³½ø³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦æ¢å¤å®ƒå—?æ¢å¤ç³»ç»Ÿè¿›ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						ULONG64 dwPID = GetDwordByISelectItem(hProcessListView, iSelectItem, 1);
 						if (!dwPID) break;
 
 						DWORD dwReturn;
 						CHAR Buffer[MAX_PATH];
 						if (!DeviceIoControl(hSys, CTL_CODE_RESUME_PROCESS, &dwPID, sizeof(ULONG64), NULL, 0, &dwReturn, NULL)) {
-							sprintf(Buffer, "»Ö¸´½ø³ÌÊ§°Ü! ·µ»Ø×´Ì¬: %d", dwReturn);
-							MessageBox(hwnd, Buffer, "½ø³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "æ¢å¤è¿›ç¨‹å¤±è´¥! è¿”å›çŠ¶æ€: %d", dwReturn);
+							MessageBox(hwnd, Buffer, "è¿›ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
-						MessageBox(hwnd, "»Ö¸´½ø³Ì³É¹¦", "½ø³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "æ¢å¤è¿›ç¨‹æˆåŠŸ", "è¿›ç¨‹", MB_OK | MB_ICONINFORMATION);
 						QueryProcess(GetDlgItem(hwnd, ID_PROCESS_LISTVIEW));
 					}
 				}
 				case MENU_THREAD_QUERY: {
-					ShowWindowWithLock(hMainWnd, hThreadWnd, "½ø³Ì", "Ïß³Ì", hProcessListView, iSelectItem, 1);
+					ShowWindowWithLock(hMainWnd, hThreadWnd, "è¿›ç¨‹", "çº¿ç¨‹", hProcessListView, iSelectItem, 1);
 					break;
 				}
 				case MENU_HANDLE_QUERY: {
-					ShowWindowWithLock(hMainWnd, hHandleWnd, "½ø³Ì", "¾ä±ú", hProcessListView, iSelectItem, 1);
+					ShowWindowWithLock(hMainWnd, hHandleWnd, "è¿›ç¨‹", "å¥æŸ„", hProcessListView, iSelectItem, 1);
 					break;
 				}
 				case MENU_WINDOW_QUERY: {
-					ShowWindowWithLock(hMainWnd, hWindowWnd, "½ø³Ì", "´°¿Ú", hProcessListView, iSelectItem, 1);
+					ShowWindowWithLock(hMainWnd, hWindowWnd, "è¿›ç¨‹", "çª—å£", hProcessListView, iSelectItem, 1);
 					break;
 				}
 				case MENU_MODULE_QUERY: {
-					ShowWindowWithLock(hMainWnd, hModuleWnd, "½ø³Ì", "Ä£¿é", hProcessListView, iSelectItem, 1);
+					ShowWindowWithLock(hMainWnd, hModuleWnd, "è¿›ç¨‹", "æ¨¡å—", hProcessListView, iSelectItem, 1);
 					break;
 				}
 			}
@@ -755,7 +765,7 @@ LRESULT CALLBACK WndPageProcessProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 	return 0;
 }
 
-static LPCSTR threadState[10] = {"ÒÑ³õÊ¼»¯", "¾ÍĞ÷", "ÔËĞĞ", "¼´½«ÔËĞĞ", "ÖÕÖ¹", "µÈ´ı", "×´Ì¬ÇĞ»»", "ÑÓ³Ù¾ÍĞ÷", "µÈ´ıÃÅ¶ÔÏó"};
+static LPCSTR threadState[10] = {"å·²åˆå§‹åŒ–", "å°±ç»ª", "è¿è¡Œ", "å³å°†è¿è¡Œ", "ç»ˆæ­¢", "ç­‰å¾…", "çŠ¶æ€åˆ‡æ¢", "å»¶è¿Ÿå°±ç»ª", "ç­‰å¾…é—¨å¯¹è±¡"};
 BOOL QueryThreads(HWND hwndListView, ULONG64 pid) {
 	ULONG64 size = sizeof(QUERY_THREAD_INFORMATION) + 1023 * sizeof(THREAD_INFO);
 	PQUERY_THREAD_INFORMATION qTpin = (PQUERY_THREAD_INFORMATION)malloc(size);
@@ -793,7 +803,7 @@ BOOL QueryThreads(HWND hwndListView, ULONG64 pid) {
 		if (qTpin->infos[index].State < 10) {
 			lvi.pszText = (LPSTR)threadState[qTpin->infos[index].State];
 		} else {
-			lvi.pszText = (LPSTR)"Î´Öª×´Ì¬";
+			lvi.pszText = (LPSTR)"æœªçŸ¥çŠ¶æ€";
 		}
 		SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 		index++;
@@ -856,7 +866,7 @@ BOOL QueryHandles(HWND hwndListView, ULONG64 pid) {
 		/*if (qHpin->infos[index].objectType < 29){
 			lvi.pszText = (LPSTR)handleTypes[qHpin->infos[index].objectType];
 		} else {
-			lvi.pszText = "Î´ÖªÀàĞÍ";
+			lvi.pszText = "æœªçŸ¥ç±»å‹";
 		}*/
 		UCHAR ObjectType = qHpin->infos[index].objectType;
 		if (ObjectType < qOpin->numberOfObjectTypes && ObjectType >= 2){
@@ -864,7 +874,7 @@ BOOL QueryHandles(HWND hwndListView, ULONG64 pid) {
 			//MessageBoxW(NULL, WideBuffer, L"", MB_OK);
 			SendMessage(hwndListView, LVM_SETITEMW, 0, (LPARAM)&lviw);
 		} else {
-			strcpy(Buffer, "Î´ÖªÀàĞÍ");
+			strcpy(Buffer, "æœªçŸ¥ç±»å‹");
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 		}
 		//sprintf(Buffer, "%ld", qHpin->infos[index].objectType);
@@ -962,19 +972,19 @@ LRESULT CALLBACK windowWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom = ID_HANDLE_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ(&R)");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°(&R)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				//AppendMenu(hMenu, MF_STRING, MENU_WINDOW_INFORMATION, "ÏêÏ¸ĞÅÏ¢(&I)");
-				AppendMenu(hMenu, MF_STRING, MENU_WINDOW_QUERY_CHILDWINDOW, "±éÀú×Ó´°¿Ú(&C)");
+				//AppendMenu(hMenu, MF_STRING, MENU_WINDOW_INFORMATION, "è¯¦ç»†ä¿¡æ¯(&I)");
+				AppendMenu(hMenu, MF_STRING, MENU_WINDOW_QUERY_CHILDWINDOW, "éå†å­çª—å£(&C)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_CLOSE, "¹Ø±Õ´°¿Ú(&D)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_HIDE, "Òş²Ø´°¿Ú(&H)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_SHOW, "ÏÔÊ¾´°¿Ú(&S)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_FREEZE, "¶³½á´°¿Ú(&F)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_ENABLE, "¼¤»î´°¿Ú(&E)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_MAXIMIZE, "×î´ó»¯´°¿Ú(&A)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_MINIMIZE, "×îĞ¡»¯´°¿Ú(&I)");
-				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_SETFORE, "Ç°ÖÃ´°¿Ú(&G)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_CLOSE, "å…³é—­çª—å£(&D)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_HIDE, "éšè—çª—å£(&H)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_SHOW, "æ˜¾ç¤ºçª—å£(&S)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_FREEZE, "å†»ç»“çª—å£(&F)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_ENABLE, "æ¿€æ´»çª—å£(&E)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_MAXIMIZE, "æœ€å¤§åŒ–çª—å£(&A)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_MINIMIZE, "æœ€å°åŒ–çª—å£(&I)");
+				AppendMenu(hMenu, MF_STRING, MENU_WNDCTL_SETFORE, "å‰ç½®çª—å£(&G)");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -990,7 +1000,7 @@ LRESULT CALLBACK windowWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 					break;
 				}
 				/*case MENU_WINDOW_QUERY_INFORMATION: {
-					ShowWindowWithLock(hwnd, hWindowInfoWnd, "´°¿Ú", "ÏêÏ¸", GetDlgItem(hwnd, ID_WINDOW_LISTVIEW), iSelectItem, 0);
+					ShowWindowWithLock(hwnd, hWindowInfoWnd, "çª—å£", "è¯¦ç»†", GetDlgItem(hwnd, ID_WINDOW_LISTVIEW), iSelectItem, 0);
 					QueryWindowData(hWindowInfoWnd);
 					break;
 				}*/
@@ -1004,7 +1014,7 @@ LRESULT CALLBACK windowWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 					CHAR Buffer[MAX_PATH];
 					switch (LOWORD(wParam)) {
 						case MENU_WNDCTL_CLOSE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒª¹Ø±ÕÕâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦å…³é—­è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								BOOL bOk = FALSE;
 								bOk |= !SendMessage(hwndTarget, WM_CLOSE, 0, 0);
 								bOk |= !SendMessage(hwndTarget, WM_DESTROY, 0, 0);
@@ -1012,95 +1022,95 @@ LRESULT CALLBACK windowWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 								bOk |= CloseWindow(hwndTarget);
 								bOk |= DestroyWindow(hwndTarget);
 								if (!bOk) {
-									sprintf(Buffer, "¹Ø±ÕÊ§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "å…³é—­å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "¹Ø±Õ³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "å…³é—­æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_HIDE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒªÒş²ØÕâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦éšè—è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (!ShowWindow(hwndTarget, SW_HIDE)) {
-									sprintf(Buffer, "Òş²ØÊ§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "éšè—å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "Òş²Ø³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "éšè—æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_SHOW: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒªÏÔÊ¾Õâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦æ˜¾ç¤ºè¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (ShowWindow(hwndTarget, SW_SHOW)) {
-									sprintf(Buffer, "ÏÔÊ¾Ê§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "æ˜¾ç¤ºå¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "ÏÔÊ¾³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "æ˜¾ç¤ºæˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_FREEZE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒª¶³½áÕâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦å†»ç»“è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (!EnableWindow(hwndTarget, FALSE)) {
-									sprintf(Buffer, "¶³½áÊ§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "å†»ç»“å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "¶³½á³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "å†»ç»“æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_ENABLE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒª¼¤»îÕâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦æ¿€æ´»è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (!EnableWindow(hwndTarget, TRUE)) {
-									sprintf(Buffer, "¼¤»îÊ§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "æ¿€æ´»å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "¼¤»î³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "æ¿€æ´»æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_MAXIMIZE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒª×î´ó»¯Õâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦æœ€å¤§åŒ–è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (!ShowWindow(hwndTarget, SW_MAXIMIZE)) {
-									sprintf(Buffer, "×î´ó»¯Ê§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "æœ€å¤§åŒ–å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "×î´ó»¯³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "æœ€å¤§åŒ–æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_MINIMIZE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒª×îĞ¡»¯Õâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦æœ€å°åŒ–è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (!ShowWindow(hwndTarget, SW_MINIMIZE)) {
-									sprintf(Buffer, "×îĞ¡»¯Ê§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "æœ€å°åŒ–å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "×îĞ¡»¯³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "æœ€å°åŒ–æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
 						}
 						case MENU_WNDCTL_SETFORE: {
-							if (MessageBox(hwnd, "ÄãÕæµÄÒªÇ°ÖÃÕâ¸ö´°¿ÚÂğ£¿", "´°¿Ú", MB_YESNO | MB_ICONWARNING) == IDYES) {
+							if (MessageBox(hwnd, "ä½ çœŸçš„è¦å‰ç½®è¿™ä¸ªçª—å£å—ï¼Ÿ", "çª—å£", MB_YESNO | MB_ICONWARNING) == IDYES) {
 								if (!SetForegroundWindow(hwndTarget)) {
-									sprintf(Buffer, "Ç°ÖÃÊ§°Ü£¡´íÎóÂë: %d", GetLastError());
-									MessageBox(hwnd, Buffer, "´°¿Ú", MB_OK | MB_ICONERROR);
+									sprintf(Buffer, "å‰ç½®å¤±è´¥ï¼é”™è¯¯ç : %d", GetLastError());
+									MessageBox(hwnd, Buffer, "çª—å£", MB_OK | MB_ICONERROR);
 									break;
 								}
-								MessageBox(hwnd, "Ç°ÖÃ³É¹¦", "´°¿Ú", MB_OK | MB_ICONINFORMATION);
+								MessageBox(hwnd, "å‰ç½®æˆåŠŸ", "çª—å£", MB_OK | MB_ICONINFORMATION);
 								QueryWindows(hWindowListView, dwCurrentPID);
 							}
 							break;
@@ -1139,9 +1149,9 @@ LRESULT CALLBACK handleWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom = ID_HANDLE_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ(&R)");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°(&R)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_HANDLE_CLOSE, "¹Ø±Õ");
+				AppendMenu(hMenu, MF_STRING, MENU_HANDLE_CLOSE, "å…³é—­");
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
 			}
@@ -1193,12 +1203,12 @@ LRESULT CALLBACK threadWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom == ID_THREAD_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ(&R)");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°(&R)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_THREAD_TERMINATE, "½áÊø(&T)");
-				AppendMenu(hMenu, MF_STRING, MENU_THREAD_FORCE_TERMINATE, "Ç¿ÖÆ½áÊø(&F)");
-				AppendMenu(hMenu, MF_STRING, MENU_THREAD_SUSPEND, "¹ÒÆğ(&S)");
-				AppendMenu(hMenu, MF_STRING, MENU_THREAD_RESUME, "»Ö¸´(&E)");
+				AppendMenu(hMenu, MF_STRING, MENU_THREAD_TERMINATE, "ç»“æŸ(&T)");
+				AppendMenu(hMenu, MF_STRING, MENU_THREAD_FORCE_TERMINATE, "å¼ºåˆ¶ç»“æŸ(&F)");
+				AppendMenu(hMenu, MF_STRING, MENU_THREAD_SUSPEND, "æŒ‚èµ·(&S)");
+				AppendMenu(hMenu, MF_STRING, MENU_THREAD_RESUME, "æ¢å¤(&E)");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -1224,17 +1234,17 @@ LRESULT CALLBACK threadWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 						break;
 					}
 
-					if (MessageBox(NULL, "ÄãÕæµÄÒª½áÊøËüÂğ?½áÊøÏµÍ³Ïß³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(NULL, "ä½ çœŸçš„è¦ç»“æŸå®ƒå—?ç»“æŸç³»ç»Ÿçº¿ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						HANDLE hThread = OpenThread(THREAD_TERMINATE, FALSE, dwTID);
 						CHAR Buffer[MAX_PATH];
 						if (!TerminateThread(hThread, 0)) {
-							sprintf(Buffer, "½áÊøÏß³ÌÊ§°Ü! ´íÎóÂë: %d", GetLastError());
-							MessageBox(hwnd, Buffer, "Ïß³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "ç»“æŸçº¿ç¨‹å¤±è´¥! é”™è¯¯ç : %d", GetLastError());
+							MessageBox(hwnd, Buffer, "çº¿ç¨‹", MB_OK | MB_ICONERROR);
 							CloseHandle(hThread);
 							break;
 						}
 						CloseHandle(hThread);
-						MessageBox(hwnd, "½áÊøÏß³Ì³É¹¦", "Ïß³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "ç»“æŸçº¿ç¨‹æˆåŠŸ", "çº¿ç¨‹", MB_OK | MB_ICONINFORMATION);
 						QueryThreads(hThreadListView, dwCurrentPID);
 					}
 					break;
@@ -1249,22 +1259,22 @@ LRESULT CALLBACK threadWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 						break;
 					}
 
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª½áÊøËüÂğ£¿Õâ¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦ç»“æŸå®ƒå—ï¼Ÿè¿™å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š!", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						DWORD dwReturn;
 						CHAR Buffer[MAX_PATH];
 						if (!DeviceIoControl(hSys, CTL_CODE_TERMINATE_THREAD, &dwTID, sizeof(ULONG64), NULL, 0, &dwReturn, NULL)) {
-							sprintf(Buffer, "Ç¿ÖÆ½áÊøÏß³ÌÊ§°Ü! ·µ»Ø×´Ì¬: %d", dwReturn);
-							MessageBox(hwnd, Buffer, "Ïß³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "å¼ºåˆ¶ç»“æŸçº¿ç¨‹å¤±è´¥! è¿”å›çŠ¶æ€: %d", dwReturn);
+							MessageBox(hwnd, Buffer, "çº¿ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
-						MessageBox(hwnd, "Ç¿ÖÆ½áÊøÏß³Ì³É¹¦", "Ïß³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "å¼ºåˆ¶ç»“æŸçº¿ç¨‹æˆåŠŸ", "çº¿ç¨‹", MB_OK | MB_ICONINFORMATION);
 						QueryThreads(hThreadListView, dwCurrentPID);
 					}
 					break;
 				}
 				case MENU_THREAD_SUSPEND: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª¹ÒÆğËüÂğ£¿¹ÒÆğÏµÍ³Ïß³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦æŒ‚èµ·å®ƒå—ï¼ŸæŒ‚èµ·ç³»ç»Ÿçº¿ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						ULONG64 dwTID = GetDwordByISelectItem(hThreadListView, iSelectItem, 0);
 						if (!dwTID) break;
 
@@ -1272,26 +1282,26 @@ LRESULT CALLBACK threadWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 
 						HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, dwTID);
 						if (!hThread) {
-							sprintf(Buffer, "¹ÒÆğÏß³ÌÊ§°Ü1! ´íÎóÂë: %d", GetLastError());
-							MessageBox(hwnd, Buffer, "Ïß³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "æŒ‚èµ·çº¿ç¨‹å¤±è´¥1! é”™è¯¯ç : %d", GetLastError());
+							MessageBox(hwnd, Buffer, "çº¿ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
 
 						if (!SuspendThread(hThread)) {
-							sprintf(Buffer, "¹ÒÆğÏß³ÌÊ§°Ü2! ´íÎóÂë: %d", GetLastError());
-							MessageBox(hwnd, Buffer, "Ïß³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "æŒ‚èµ·çº¿ç¨‹å¤±è´¥2! é”™è¯¯ç : %d", GetLastError());
+							MessageBox(hwnd, Buffer, "çº¿ç¨‹", MB_OK | MB_ICONERROR);
 							CloseHandle(hThread);
 							break;
 						}
 						CloseHandle(hThread);
-						MessageBox(hwnd, "¹ÒÆğÏß³Ì³É¹¦", "Ïß³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "æŒ‚èµ·çº¿ç¨‹æˆåŠŸ", "çº¿ç¨‹", MB_OK | MB_ICONINFORMATION);
 						QueryThreads(hThreadListView, dwCurrentPID);
 					}
 					break;
 				}
 				case MENU_THREAD_RESUME: {
 					if (iSelectItem == -1) break;
-					if (MessageBox(hwnd, "ÄãÕæµÄÒª»Ö¸´ËüÂğ£¿»Ö¸´ÏµÍ³Ïß³Ì¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
+					if (MessageBox(hwnd, "ä½ çœŸçš„è¦æ¢å¤å®ƒå—ï¼Ÿæ¢å¤ç³»ç»Ÿçº¿ç¨‹å¯èƒ½å¯¼è‡´ç³»ç»Ÿä¸ç¨³å®š", "", MB_YESNO | MB_ICONWARNING) == IDYES) {
 						ULONG64 dwTID = GetDwordByISelectItem(hThreadListView, iSelectItem, 0);
 						if (!dwTID) break;
 
@@ -1299,19 +1309,19 @@ LRESULT CALLBACK threadWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 
 						HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, dwTID);
 						if (!hThread) {
-							sprintf(Buffer, "»Ö¸´Ïß³ÌÊ§°Ü1! ´íÎóÂë: %d", GetLastError());
-							MessageBox(hwnd, Buffer, "Ïß³Ì", MB_OK | MB_ICONERROR);
+							sprintf(Buffer, "æ¢å¤çº¿ç¨‹å¤±è´¥1! é”™è¯¯ç : %d", GetLastError());
+							MessageBox(hwnd, Buffer, "çº¿ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
 
 						if (!ResumeThread(hThread)) {
-							sprintf(Buffer, "»Ö¸´Ïß³ÌÊ§°Ü2! ´íÎóÂë: %d", GetLastError());
+							sprintf(Buffer, "æ¢å¤çº¿ç¨‹å¤±è´¥2! é”™è¯¯ç : %d", GetLastError());
 							CloseHandle(hThread);
-							MessageBox(hwnd, Buffer, "Ïß³Ì", MB_OK | MB_ICONERROR);
+							MessageBox(hwnd, Buffer, "çº¿ç¨‹", MB_OK | MB_ICONERROR);
 							break;
 						}
 						CloseHandle(hThread);
-						MessageBox(hwnd, "»Ö¸´Ïß³Ì³É¹¦", "Ïß³Ì", MB_OK | MB_ICONINFORMATION);
+						MessageBox(hwnd, "æ¢å¤çº¿ç¨‹æˆåŠŸ", "çº¿ç¨‹", MB_OK | MB_ICONINFORMATION);
 						QueryThreads(hThreadListView, dwCurrentPID);
 					}
 					break;
@@ -1337,13 +1347,13 @@ LRESULT CALLBACK moduleWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 			LPNMHDR pNmh = (LPNMHDR)lParam;
 			if (pNmh->idFrom == ID_MODULE_LISTVIEW && pNmh->code == NM_RCLICK) {
 				HMENU hMenu = CreatePopupMenu();
-				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "Ë¢ĞÂ(&R)");
+				AppendMenu(hMenu, MF_STRING, MENU_REFRESH, "åˆ·æ–°(&R)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_MODULE_UNLOAD, "Ğ¶ÔØ(&U)");
-				AppendMenu(hMenu, MF_STRING, MENU_MODULE_GLOBAL_UNLOAD, "È«¾ÖĞ¶ÔØ(&G)");
-				AppendMenu(hMenu, MF_STRING, MENU_MODULE_DELETE_FILE, "É¾³ıÄ£¿éÎÄ¼ş(&F)");
+				AppendMenu(hMenu, MF_STRING, MENU_MODULE_UNLOAD, "å¸è½½(&U)");
+				AppendMenu(hMenu, MF_STRING, MENU_MODULE_GLOBAL_UNLOAD, "å…¨å±€å¸è½½(&G)");
+				AppendMenu(hMenu, MF_STRING, MENU_MODULE_DELETE_FILE, "åˆ é™¤æ¨¡å—æ–‡ä»¶(&F)");
 				AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-				AppendMenu(hMenu, MF_STRING, MENU_MODULE_SHOW_DEPENT, "²é¿´È«¾ÖÒÀÀµ¹ØÏµ(&D)");
+				AppendMenu(hMenu, MF_STRING, MENU_MODULE_SHOW_DEPENT, "æŸ¥çœ‹å…¨å±€ä¾èµ–å…³ç³»(&D)");
 
 				ShowMenu(hwnd, hMenu, lParam);
 				break;
@@ -1386,208 +1396,6 @@ LRESULT CALLBACK moduleWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lP
 			break;
 	}
 	return 0;
-}
-
-DWORD RvaToFoa(PIMAGE_NT_HEADERS64 ntHeader, PIMAGE_SECTION_HEADER pSection, DWORD RVA) {
-	for (int i = 0; i < ntHeader->FileHeader.NumberOfSections; i++, pSection++) {
-		if (RVA >= pSection->VirtualAddress && RVA < pSection->VirtualAddress + pSection->Misc.VirtualSize) {
-			return (RVA - pSection->VirtualAddress) + pSection->PointerToRawData;
-		}
-	}
-	return 0;
-}
-
-DWORD FoaToRva(PIMAGE_NT_HEADERS64 ntHeaders, PIMAGE_SECTION_HEADER pSection, DWORD FOA) {
-	for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; i++, pSection++) {
-		if (FOA >= pSection->PointerToRawData && 
-			FOA < pSection->PointerToRawData + pSection->SizeOfRawData) {
-			return (FOA - pSection->PointerToRawData) + pSection->VirtualAddress;
-		}
-	}
-	return 0;
-}
-
-BOOL GetOriginSSDTDataFromNtOsKrnlImage() {
-	QUERY_SSDT_INFORMATION qsinf;
-	ULONG64 ssdtNumber = SSDT_NUMBERS;
-	DWORD dwReturn;
-	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_SSDT_DATA, (PVOID)&ssdtNumber, sizeof(ULONG64), (PVOID)&qsinf, sizeof(QUERY_SSDT_INFORMATION), &dwReturn, NULL)) {
-		return FALSE;
-	}
-
-	CHAR NtOsKrnlPath[MAX_PATH];
-	GetSystemDirectoryA(NtOsKrnlPath, MAX_PATH);
-	strcat(NtOsKrnlPath, "\\..\\SysNative\\ntoskrnl.exe");
-
-	HANDLE hFile = CreateFileA(NtOsKrnlPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return FALSE;
-
-	DWORD fileSize = GetFileSize(hFile, NULL);
-	if (fileSize == INVALID_FILE_SIZE) {
-		CloseHandle(hFile);
-		return FALSE;
-	}
-
-	PBYTE Buffer = (PBYTE)VirtualAlloc(NULL, fileSize, MEM_COMMIT, PAGE_READWRITE);
-	if (!Buffer) {
-		CloseHandle(hFile);
-		return FALSE;
-	}
-
-	DWORD bytesRead;
-	if (!ReadFile(hFile, Buffer, fileSize, &bytesRead, NULL)) {
-		CloseHandle(hFile);
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-
-	CloseHandle(hFile);
-
-	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)Buffer;
-	if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-
-	PIMAGE_NT_HEADERS64 ntHeaders = (PIMAGE_NT_HEADERS64)(Buffer + dosHeader->e_lfanew);
-	if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-	
-	PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(ntHeaders);
-
-	ULONG32 KiServiceTableRVA = qsinf.KiServiceTableAddr - qsinf.KernelBase;
-	PULONG64 KiServiceTableImage = (PULONG64)(Buffer + RvaToFoa(ntHeaders, pSection, KiServiceTableRVA));
-	ULONG64 KernelImageBase = ntHeaders->OptionalHeader.ImageBase;
-	//printf("0x%016llX 0x%016llX 0x%08X 0x%08X 0x%08X 0x%016llX\n", qsinf.KiServiceTableAddr, qsinf.KernelBase, KiServiceTableRVA, KiServiceTableFOA, KiServiceTableImage, KernelImageBase);
-	for (int i = 0; i < SSDT_NUMBERS; i++) {
-		ULONG32 OriginKiServiceTableEntryRVA = KiServiceTableImage[i] - KernelImageBase;
-		ULONG64 OriginKiServiceTableEntryVA = OriginKiServiceTableEntryRVA + qsinf.KernelBase;
-		//printf("0x%08X 0x%016llX\n", OriginKiServiceTableEntryRVA, OriginKiServiceTableEntryVA);
-		OriginSSDTData[i] = OriginKiServiceTableEntryVA;
-	}
-
-	VirtualFree(Buffer, 0, MEM_RELEASE);
-	return TRUE;
-}
-
-BOOL GetOriginSSSDTData(){
-	QUERY_SSSDT_INFORMATION qsinf;
-	ULONG64 sssdtNumber = SSSDT_NUMBERS;
-	DWORD dwReturn;
-	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_SSSDT_DATA, (PVOID)&sssdtNumber, sizeof(ULONG64), (PVOID)&qsinf, sizeof(QUERY_SSSDT_INFORMATION), &dwReturn, NULL)) {
-		return FALSE;
-	}
-	
-	CHAR Win32kPath[MAX_PATH];
-	GetSystemDirectoryA(Win32kPath, MAX_PATH);
-	strcat(Win32kPath, "\\..\\SysNative\\win32k.sys");
-	
-	HANDLE hFile = CreateFileA(Win32kPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return FALSE;
-	
-	DWORD fileSize = GetFileSize(hFile, NULL);
-	if (fileSize == INVALID_FILE_SIZE){
-		CloseHandle(hFile);
-		return FALSE;
-	}
-	
-	PBYTE Buffer = (PBYTE)VirtualAlloc(NULL, fileSize, MEM_COMMIT, PAGE_READWRITE);
-	if (!Buffer){
-		CloseHandle(hFile);
-		return FALSE;
-	}
-	
-	DWORD bytesRead;
-	if(!ReadFile(hFile, Buffer, fileSize, &bytesRead, NULL)){
-		CloseHandle(hFile);
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-	
-	CloseHandle(hFile);
-	
-	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)Buffer;
-	if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE){
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-	
-	PIMAGE_NT_HEADERS64 ntHeaders = (PIMAGE_NT_HEADERS64)(Buffer + dosHeader->e_lfanew);
-	if (ntHeaders->Signature != IMAGE_NT_SIGNATURE){
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-	
-	PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(ntHeaders);
-	
-	/*DWORD importDirRVA = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
-	if(importDirRVA == 0){
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-	
-	PIMAGE_IMPORT_DESCRIPTOR importDir = (PIMAGE_IMPORT_DESCRIPTOR)(Buffer + RvaToFoa(ntHeaders, pSection, importDirRVA));  // »ñÈ¡ _imp_KeAddSystemServiceTable µÄ RVA
-	DWORD64 _imp_KeAddSystemServiceTableRVA = 0;
-	for(int i=0;importDir[i].Name;i++){
-		LPCSTR importDllName = (LPCSTR)(Buffer + RvaToFoa(ntHeaders, pSection, importDir[i].Name));
-		if(strcmp(importDllName, "ntoskrnl.exe") == 0){
-			PIMAGE_THUNK_DATA64 pIAT = (PIMAGE_THUNK_DATA64)(Buffer + RvaToFoa(ntHeaders, pSection, importDir->FirstThunk));
-			for(int j=0;pIAT[j].u1.AddressOfData;j++){
-				if ((pIAT[j].u1.AddressOfData && 0x1000000000000000) == 1) continue;
-				PIMAGE_IMPORT_BY_NAME pIibn = (PIMAGE_IMPORT_BY_NAME)(Buffer + RvaToFoa(ntHeaders, pSection, pIAT[j].u1.AddressOfData));
-				if (strcmp((LPCSTR)&pIibn->Name[0], "KeAddSystemServiceTable") == 0){
-					DWORD64 _imp_KeAddSystemServiceTableFOA = (PBYTE)&pIAT[j] - Buffer;
-					_imp_KeAddSystemServiceTableRVA = FoaToRva(ntHeaders, pSection, _imp_KeAddSystemServiceTableFOA);
-					break;
-				}
-			}
-			break;
-		}
-	}*/
-	
-	//ULONG64 _imp_KeAddSystemServiceTableVA = _imp_KeAddSystemServiceTableRVA + qsinf.Win32kBase;
-	//DWORD PatternDWORD9 = 0xffffffff && (_imp_KeAddSystemServiceTableRVA + qsinf->Win32kBase);
-	
-	INT8* pDriverEntry = (INT8*)(Buffer + RvaToFoa(ntHeaders, pSection, ntHeaders->OptionalHeader.AddressOfEntryPoint));
-	PULONG64 W32pServiceTable = NULL;
-	for(INT8* i=pDriverEntry;i<pDriverEntry + 0x500;i++){		// ´ÓDriverEntry¿ªÊ¼ËÑË÷w32pServiceTableµÄÒıÓÃ 0x500×Ö½Ú¼´¿É
-		UINT8 v0 = *i;
-		if (v0 != 0x48) continue;
-		
-		UINT16 v1, v11;
-		UINT32 v7, v13;
-		v1 = *(PWORD)(i+1);
-		v7 = *(PDWORD)(i+7);
-		v11 = *(PWORD)(i+11);
-		
-		if(v1 == 0x0d8d && v7 == 0x20246c89 && v11 == 0x15ff){
-			//INT32 PatternDWORD13 = (ULONG64)i - (ULONG64)Buffer - _imp_KeAddSystemServiceTableRVA;
-			
-			if(1){
-				INT32 v13 = *(PDWORD)(i+13);
-				INT32 v3 = *(PDWORD)(i+3);
-				DWORD W32pServiceTableRVA = v3 + FoaToRva(ntHeaders, pSection, (DWORD)(i - (DWORD)Buffer)) + 7;
-				W32pServiceTable = (PULONG64)(Buffer + RvaToFoa(ntHeaders, pSection, W32pServiceTableRVA));
-				//printf("0x%X 0x%X 0x%X\n", v3, W32pServiceTableRVA, W32pServiceTable);
-				//CHAR buffer[260];
-				//sprintf(buffer, "0x%016llX 0x%016llX 0x%016llX", PatternDWORD13, v13, _imp_KeAddSystemServiceTableRVA);
-				//MessageBox(NULL, buffer, "", MB_OK);
-				break;
-			}
-		}
-	}
-	
-	if(!W32pServiceTable){
-		return FALSE;
-	}
-	
-	for(int i=0;i<SSSDT_NUMBERS;i++){
-		OriginSSSDTData[i] = W32pServiceTable[i] - ntHeaders->OptionalHeader.ImageBase + qsinf.Win32kBase;
-	}
-	
-	VirtualFree(Buffer, 0, MEM_RELEASE);
 }
 
 void ReleaseReg(HKEY hKey) {
@@ -1685,9 +1493,9 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	TCITEM tie = { 0 };
 	tie.mask = TCIF_TEXT;
 	
-	tie.pszText = (LPSTR)"½ø³Ì";
+	tie.pszText = (LPSTR)"è¿›ç¨‹";
 	SendMessage(hwndMainTab, TCM_INSERTITEM, 0, (LPARAM)&tie);
-	tie.pszText = (LPSTR)"ÄÚºË¹³×Ó";
+	tie.pszText = (LPSTR)"å†…æ ¸é’©å­";
 	SendMessage(hwndMainTab, TCM_INSERTITEM, 1, (LPARAM)&tie);
 	
 	hInfoTextWnd = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, "", WS_CHILD | WS_VISIBLE | ES_READONLY, 2, 427, 626, 20, mainHwnd, \
@@ -1704,13 +1512,13 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndProcessListView, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	SendMessage(hwndProcessListView, WM_SETFONT, (WPARAM)Font, TRUE);
 
-	AppendColumn(hwndProcessListView, &lvc, "Ó³ÏñÃû³Æ", 150);
+	AppendColumn(hwndProcessListView, &lvc, "æ˜ åƒåç§°", 150);
 	AppendColumn(hwndProcessListView, &lvc, "PID", 50);
-	AppendColumn(hwndProcessListView, &lvc, "¸¸½ø³ÌPID", 70);
-	AppendColumn(hwndProcessListView, &lvc, "Ó³ÏñÂ·¾¶", 200);
+	AppendColumn(hwndProcessListView, &lvc, "çˆ¶è¿›ç¨‹PID", 70);
+	AppendColumn(hwndProcessListView, &lvc, "æ˜ åƒè·¯å¾„", 200);
 	AppendColumn(hwndProcessListView, &lvc, "EPROCESS", 140);
 
-	QueryProcess(hwndProcessListView);	// ½ö´ËÒ»¸öÔÚWM_CREATEÖĞ³õÊ¼»¯µÄ!
+	QueryProcess(hwndProcessListView);	// ä»…æ­¤ä¸€ä¸ªåœ¨WM_CREATEä¸­åˆå§‹åŒ–çš„!
 	
 	// PageKernelHook create
 	HWND hwndPageKernelHook = CreateWindowEx(0, WC_STATIC, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,
@@ -1739,11 +1547,11 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndSSDTListView, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	SendMessage(hwndSSDTListView, WM_SETFONT, (WPARAM)Font, TRUE);
 
-	AppendColumn(hwndSSDTListView, &lvc, "ĞòºÅ", 40);
-	AppendColumn(hwndSSDTListView, &lvc, "º¯ÊıÃû", 170);
-	AppendColumn(hwndSSDTListView, &lvc, "Ô­Ê¼º¯ÊıµØÖ·", 140);
-	AppendColumn(hwndSSDTListView, &lvc, "¹³×Ó×´Ì¬", 60);
-	AppendColumn(hwndSSDTListView, &lvc, "µ±Ç°º¯ÊıµØÖ·", 140);
+	AppendColumn(hwndSSDTListView, &lvc, "åºå·", 40);
+	AppendColumn(hwndSSDTListView, &lvc, "å‡½æ•°å", 170);
+	AppendColumn(hwndSSDTListView, &lvc, "åŸå§‹å‡½æ•°åœ°å€", 140);
+	AppendColumn(hwndSSDTListView, &lvc, "é’©å­çŠ¶æ€", 60);
+	AppendColumn(hwndSSDTListView, &lvc, "å½“å‰å‡½æ•°åœ°å€", 140);
 
 	HWND hwndPageSSSDT = CreateWindowEx(0, WC_STATIC, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,
 			                            0, 24, 640, 401, hwndPageKernelHook, (HMENU)ID_PAGE_SSSDT, hInstance, NULL);
@@ -1755,11 +1563,11 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndSSSDTListView, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	SendMessage(hwndSSSDTListView, WM_SETFONT, (WPARAM)Font, TRUE);
 
-	AppendColumn(hwndSSSDTListView, &lvc, "ĞòºÅ", 40);
-	AppendColumn(hwndSSSDTListView, &lvc, "º¯ÊıÃû", 170);
-	AppendColumn(hwndSSSDTListView, &lvc, "Ô­Ê¼º¯ÊıµØÖ·", 140);
-	AppendColumn(hwndSSSDTListView, &lvc, "¹³×Ó×´Ì¬", 60);
-	AppendColumn(hwndSSSDTListView, &lvc, "µ±Ç°º¯ÊıµØÖ·", 140);
+	AppendColumn(hwndSSSDTListView, &lvc, "åºå·", 40);
+	AppendColumn(hwndSSSDTListView, &lvc, "å‡½æ•°å", 170);
+	AppendColumn(hwndSSSDTListView, &lvc, "åŸå§‹å‡½æ•°åœ°å€", 140);
+	AppendColumn(hwndSSSDTListView, &lvc, "é’©å­çŠ¶æ€", 60);
+	AppendColumn(hwndSSSDTListView, &lvc, "å½“å‰å‡½æ•°åœ°å€", 140);
 	
 	// PageObjectHook create
 	HWND hwndPageObjectHook = CreateWindowEx(0, WC_STATIC, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,
@@ -1771,11 +1579,11 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndObjectHookListView, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	SendMessage(hwndObjectHookListView, WM_SETFONT, (WPARAM)Font, TRUE);
 	
-	AppendColumn(hwndObjectHookListView, &lvc, "º¯ÊıÃû", 170);
-	AppendColumn(hwndObjectHookListView, &lvc, "Ô­Ê¼º¯ÊıµØÖ·", 140);
-	AppendColumn(hwndObjectHookListView, &lvc, "¹³×Ó×´Ì¬", 60);
-	AppendColumn(hwndObjectHookListView, &lvc, "µ±Ç°º¯ÊıµØÖ·", 140);
-	AppendColumn(hwndObjectHookListView, &lvc, "ObjectÀàĞÍ", 80);
+	AppendColumn(hwndObjectHookListView, &lvc, "å‡½æ•°å", 170);
+	AppendColumn(hwndObjectHookListView, &lvc, "åŸå§‹å‡½æ•°åœ°å€", 140);
+	AppendColumn(hwndObjectHookListView, &lvc, "é’©å­çŠ¶æ€", 60);
+	AppendColumn(hwndObjectHookListView, &lvc, "å½“å‰å‡½æ•°åœ°å€", 140);
+	AppendColumn(hwndObjectHookListView, &lvc, "Objectç±»å‹", 80);
 
 	hThreadWnd = CreateWindowEx(0, "Thread", "", WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX, \
 			                   	300, 300, 400, 300, NULL, NULL, hInstance, NULL);
@@ -1793,9 +1601,9 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndThreadListView, WM_SETFONT, (WPARAM)Font, TRUE);
 
 	AppendColumn(hwndThreadListView, &lvc, "TID", 100);
-	AppendColumn(hwndThreadListView, &lvc, "Ïß³ÌÈë¿Ú", 140);
-	AppendColumn(hwndThreadListView, &lvc, "ÓÅÏÈ¼¶", 50);
-	AppendColumn(hwndThreadListView, &lvc, "×´Ì¬", 75);
+	AppendColumn(hwndThreadListView, &lvc, "çº¿ç¨‹å…¥å£", 140);
+	AppendColumn(hwndThreadListView, &lvc, "ä¼˜å…ˆçº§", 50);
+	AppendColumn(hwndThreadListView, &lvc, "çŠ¶æ€", 75);
 	
 	// handle create
 	HWND hwndHandleListView = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER, \
@@ -1803,10 +1611,10 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndHandleListView, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	SendMessage(hwndHandleListView, WM_SETFONT, (WPARAM)Font, TRUE);
 
-	AppendColumn(hwndHandleListView, &lvc, "¾ä±úÖµ", 100);
-	AppendColumn(hwndHandleListView, &lvc, "¶ÔÏóµØÖ·", 140);
-	AppendColumn(hwndHandleListView, &lvc, "·ÃÎÊÈ¨ÏŞ", 100);
-	AppendColumn(hwndHandleListView, &lvc, "¾ä±úÀàĞÍ", 100);
+	AppendColumn(hwndHandleListView, &lvc, "å¥æŸ„å€¼", 100);
+	AppendColumn(hwndHandleListView, &lvc, "å¯¹è±¡åœ°å€", 140);
+	AppendColumn(hwndHandleListView, &lvc, "è®¿é—®æƒé™", 100);
+	AppendColumn(hwndHandleListView, &lvc, "å¥æŸ„ç±»å‹", 100);
 	
 	// window create
 	HWND hwndWindowListView = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER, \
@@ -1817,11 +1625,11 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	AppendColumn(hwndWindowListView, &lvc, "PID", 50);
 	AppendColumn(hwndWindowListView, &lvc, "HWND", 60);
 	AppendColumn(hwndWindowListView, &lvc, "TID", 50);
-	AppendColumn(hwndWindowListView, &lvc, "´°¿Ú±êÌâ", 110);
-	AppendColumn(hwndWindowListView, &lvc, "´°¿ÚÀàÃû", 120);
-	AppendColumn(hwndWindowListView, &lvc, "´°¿ÚÑùÊ½", 90);
-	AppendColumn(hwndWindowListView, &lvc, "ÍØÕ¹ÑùÊ½", 90);
-	AppendColumn(hwndWindowListView, &lvc, "¿í x ¸ß", 130);
+	AppendColumn(hwndWindowListView, &lvc, "çª—å£æ ‡é¢˜", 110);
+	AppendColumn(hwndWindowListView, &lvc, "çª—å£ç±»å", 120);
+	AppendColumn(hwndWindowListView, &lvc, "çª—å£æ ·å¼", 90);
+	AppendColumn(hwndWindowListView, &lvc, "æ‹“å±•æ ·å¼", 90);
+	AppendColumn(hwndWindowListView, &lvc, "å®½ x é«˜", 130);
 	
 	// module create
 	HWND hwndModuleListView = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER, \
@@ -1829,9 +1637,9 @@ bool InitWindow(PMSG msg, HINSTANCE hInstance, time_t startTime, time_t eachTime
 	SendMessage(hwndModuleListView, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	SendMessage(hwndModuleListView, WM_SETFONT, (WPARAM)Font, TRUE);
 
-	AppendColumn(hwndModuleListView, &lvc, "Ä£¿éÂ·¾¶", 150);
-	AppendColumn(hwndModuleListView, &lvc, "»ùÖ·", 140);
-	AppendColumn(hwndModuleListView, &lvc, "´óĞ¡", 140);
+	AppendColumn(hwndModuleListView, &lvc, "æ¨¡å—è·¯å¾„", 150);
+	AppendColumn(hwndModuleListView, &lvc, "åŸºå€", 140);
+	AppendColumn(hwndModuleListView, &lvc, "å¤§å°", 140);
 	return true;
 }
 
@@ -1848,19 +1656,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!AllocateAndInitializeSid(&SIDAuthNT, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, \
 		0, 0, 0, 0, 0, 0, &administratorGroup)){
-		sprintf(errorBuffer, "»·¾³ÑéÖ¤Ê§°Ü2! ´íÎóÂë: %d", GetLastError());
+		sprintf(errorBuffer, "ç¯å¢ƒéªŒè¯å¤±è´¥2! é”™è¯¯ç : %d", GetLastError());
 		MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
 
 	if (!CheckTokenMembership(NULL, administratorGroup, &isAdmin)){
-		sprintf(errorBuffer, "»·¾³ÑéÖ¤Ê§°Ü3! ´íÎóÂë: %d", GetLastError());
+		sprintf(errorBuffer, "ç¯å¢ƒéªŒè¯å¤±è´¥3! é”™è¯¯ç : %d", GetLastError());
 		MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
 
 	if (!isAdmin){
-		MessageBox(NULL, "ÇëÒÔ¹ÜÀíÔ±È¨ÏŞÔËĞĞ´Ë³ÌĞò!", "", MB_OK | MB_ICONERROR);
+		MessageBox(NULL, "è¯·ä»¥ç®¡ç†å‘˜æƒé™è¿è¡Œæ­¤ç¨‹åº!", "", MB_OK | MB_ICONERROR);
 		return 0;
 	}*/
 
@@ -1872,7 +1680,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!NtLoadDriver || !NtUnloadDriver || !RtlAdjustPrivilege) {
 		printf("[ FATAL ] Cannot load function. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
-		//sprintf(errorBuffer, "¶¯Ì¬¼ÓÔØÊ§°Ü! ´íÎóÂë: %d", GetLastError());
+		//sprintf(errorBuffer, "åŠ¨æ€åŠ è½½å¤±è´¥! é”™è¯¯ç : %d", GetLastError());
 		//MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
@@ -1882,14 +1690,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	/*HANDLE hToken;
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken)) {
-		sprintf(errorBuffer, "ÌáÈ¨Ê§°Ü1! ´íÎóÂë: %d", GetLastError());
+		sprintf(errorBuffer, "ææƒå¤±è´¥1! é”™è¯¯ç : %d", GetLastError());
 		MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
 
 	TOKEN_PRIVILEGES tkp;
 	if (!LookupPrivilegeValueA(NULL, SE_LOAD_DRIVER_NAME, &tkp.Privileges[0].Luid)) {
-		sprintf(errorBuffer, "ÌáÈ¨Ê§°Ü2! ´íÎóÂë: %d", GetLastError());
+		sprintf(errorBuffer, "ææƒå¤±è´¥2! é”™è¯¯ç : %d", GetLastError());
 		MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
@@ -1898,7 +1706,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
 	if (!AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, NULL, NULL)) {
-		sprintf(errorBuffer, "ÌáÈ¨Ê§°Ü3! ´íÎóÂë: %d", GetLastError());
+		sprintf(errorBuffer, "ææƒå¤±è´¥3! é”™è¯¯ç : %d", GetLastError());
 		MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}*/
@@ -1908,7 +1716,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	status = RtlAdjustPrivilege(SeLoadDriverPrivilege, TRUE, FALSE, &bEnabled);
 	if (!NT_SUCCESS(status)){
 		printf("[ FATAL ] Cannot adjust privilege. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
-		//sprintf(errorBuffer, "ÌáÈ¨Ê§°Ü! ´íÎóÂë: 0x%08X", status);
+		//sprintf(errorBuffer, "ææƒå¤±è´¥! é”™è¯¯ç : 0x%08X", status);
 		//MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
@@ -1925,7 +1733,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HANDLE hFile = CreateFileW(Path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		printf("[ FATAL ] Cannot create file. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
-		//sprintf(errorBuffer, "ÎŞ·¨Ğ´ÈëÎÄ¼ş,ÇëÇåÀíÄ¿Â¼! ´íÎóÂë: %d", GetLastError());
+		//sprintf(errorBuffer, "æ— æ³•å†™å…¥æ–‡ä»¶,è¯·æ¸…ç†ç›®å½•! é”™è¯¯ç : %d", GetLastError());
 		//MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
@@ -1951,7 +1759,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ReleaseReg(hKey);
 	if (!NT_SUCCESS(status)) {
 		printf("[ ERROR ] Cannot load driver. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
-		//sprintf(errorBuffer, "¼ÓÔØÇı¶¯Ê§°Ü ÇëÖØÊÔ! ´íÎóÂë: 0x%08X", status);
+		//sprintf(errorBuffer, "åŠ è½½é©±åŠ¨å¤±è´¥ è¯·é‡è¯•! é”™è¯¯ç : 0x%08X", status);
 		//MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		//return 0;
 	} else {
@@ -1966,12 +1774,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		NtUnloadDriver(&RegPath);
 		ReleaseReg(hKey);
 		printf("[ ERROR ] Cannot open driver. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
-		//sprintf(errorBuffer, "ÎŞ·¨´ò¿ª·şÎñ Çë²»Òª´ò¿ª¶à·İ±¾³ÌĞò! ´íÎóÂë: %d", GetLastError());
+		//sprintf(errorBuffer, "æ— æ³•æ‰“å¼€æœåŠ¡ è¯·ä¸è¦æ‰“å¼€å¤šä»½æœ¬ç¨‹åº! é”™è¯¯ç : %d", GetLastError());
 		//MessageBox(NULL, errorBuffer, "", MB_OK | MB_ICONERROR);
 		//return 0;
 	}
 
-	if (!GetOriginSSDTDataFromNtOsKrnlImage()){
+	if (!GetOriginDataFromNtOsKrnlImage()){
 		printf("[ ERROR ] Cannot get data. Use %.0f ms\n", difftime(clock(), eachTime));
 	} else {
 		printf("[ INIT ] Get data done. Use %.0f ms\n", difftime(clock(), eachTime));
@@ -2013,4 +1821,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	printf("[ CLEAN ] Clean up done. Use %.0f ms\n", difftime(clock(), eachTime));
 
 	return (int)msg.wParam;
+}
+
+int main(int argc, char** argv) {
+    return WinMain(GetModuleHandle(NULL), NULL,
+                   GetCommandLineA(), SW_SHOWDEFAULT);
 }
