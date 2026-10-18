@@ -1241,53 +1241,49 @@ const char* sssdtfunc[SSSDT_NUMBERS] = {
     "UserSetWindowLongPtr"
 };
 
-const char *procedureNames[][9] = {
-    {"Adapter", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"AlpcPortObjectType", NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"Callback", NULL, NULL, NULL, "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
+const struct _PROCEDURE_NAMES procedureNames[46] = {
     {"CmpKeyObjectType", NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL},
-    {"Controller", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"DebugObject", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"Desktop", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, "OkayToCloseProcedure"},
-    {"EnlightenmentState", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"EtwConsumer", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"EtwRegistration", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"EventPair", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"ExEventObjectType", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"ExMutantObjectType", NULL, NULL, NULL, "ExpDeleteMutant", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"ExSemaphoreObjectType", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"FilterCommunicationPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"FilterConnectionPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"IoCompletionObjectType", NULL, NULL, "IopCloseIoCompletion", "IopDeleteIoCompletion", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"IoCompletionReserve", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"IoDeviceObjectType", NULL, NULL, NULL, "IopDeleteDevice", "IopParseDevice", "IopGetSetSecurityObject", NULL, NULL},
-    {"IoDriverObjectType", NULL, NULL, NULL, "IopDeleteDriver", NULL, "SeDefaultObjectMethod", NULL, NULL},
     {"IoFileObjectType", NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL},
-    {"KeyedEvent", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"LLTDCallbackRspndr0006000006000000", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"MmSectionObjectType", NULL, NULL, NULL, "MiSectionDelete", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"ObpDirectoryObjectType", NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"ObpSymbolicLinkObjectType", NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", "SeDefaultObjectMethod", NULL, NULL},
-    {"ObpTypeObjectType", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"PcwObject", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"PowerRequest", NULL, NULL, "CloseProcedure", NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"PowerState", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"ProcessorAdd", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"Profile", NULL, NULL, NULL, "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"PsJobType", NULL, NULL, "PspJobClose", "PspJobDelete", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"PsProcessType", NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"PsThreadType", NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"SeTokenObjectType", NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"Session", NULL, NULL, NULL, "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"Timer", NULL, NULL, NULL, "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"TmEn", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"TmRm", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"TmTm", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"TmTx", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"TpWorkerFactory", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"UserApcReserve", NULL, NULL, NULL, NULL, NULL, "SeDefaultObjectMethod", NULL, NULL},
-    {"WindowStation", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", "ParseProcedure", "SeDefaultObjectMethod", NULL, "OkayToCloseProcedure"},
-    {"WmiGuid", NULL, NULL, NULL, "DeleteProcedure", NULL, "SeDefaultObjectMethod", NULL, NULL}
+    {"IoDriverObjectType", NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL},
+    {"IoDeviceObjectType", NULL, NULL, NULL, "IopDeleteDevice", "IopParseDevice", "IopGetSetSecurityObject", NULL, NULL},
+    {"IoCompletionObjectType", NULL, NULL, "IopCloseIoCompletion", "IopDeleteIoCompletion", NULL, NULL, NULL, NULL},
+    {"PsJobType", NULL, NULL, "PspJobClose", "PspJobDelete", NULL, NULL, NULL, NULL},
+    {"PsThreadType", NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, NULL, NULL, NULL},
+    {"PsProcessType", NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, NULL, NULL, NULL},
+    {"ObpTypeObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"ObpDirectoryObjectType", NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, NULL, NULL, NULL},
+    {"ObpSymbolicLinkObjectType", NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", NULL, NULL, NULL},
+    {"MmSectionObjectType", NULL, NULL, NULL, "MiSectionDelete", NULL, NULL, NULL, NULL},
+    {"ExEventObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"ExMutantObjectType", NULL, NULL, NULL, "ExpDeleteMutant", NULL, NULL, NULL, NULL},
+    {"ExSemaphoreObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"SeTokenObjectType", NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, NULL, NULL, NULL},
+    {"AlpcPortObjectType", NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, NULL, NULL, NULL},
+    {"TmTm", NULL, "FsRtlSyncVolumes", "TmpCloseTransactionManager", "TmpDeleteTransactionManager", NULL, NULL, NULL, NULL},
+    {"Desktop", NULL, "ExpWin32OpenProcedure", "ExpWin32CloseProcedure", "ExpWin32DeleteProcedure", "ExpWin32ParseProcedure", NULL, NULL, "ExpWin32DeleteProcedure"},
+    {"DebugObject", NULL, NULL, "DbgkpCloseObject", "xHalEndOfBoot", NULL, NULL, NULL, NULL},
+    {"TpWorkerFactory", NULL, NULL, "ExpCloseWorkerFactory", "ExpDeleteWorkerFactory", NULL, NULL, NULL, NULL},
+    {"Adapter", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"EventPair", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"PcwObject", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"WmiGuid", NULL, NULL, NULL, "WmipDeleteMethod", NULL, "WmipDeleteMethod", NULL, NULL},
+    {"EtwRegistration", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"Session", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"Timer", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"WindowStation", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", "ParseProcedure", NULL, NULL, "OkayToCloseProcedure"},
+    {"Profile", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"EtwConsumer", NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL},
+    {"TmTx", NULL, NULL, "TmpCloseTransaction", "TmpDeleteTransaction", NULL, NULL, NULL, NULL},
+    {"KeyedEvent", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"Callback", NULL, NULL, NULL, "FsRtlInitializeOplock", NULL, NULL, NULL, NULL},
+    {"FilterConnectionPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"UserApcReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"Controller", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"IoCompletionReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"TmEn", NULL, NULL, "TmpCloseEnlistment", "TmpDeleteEnlistment", NULL, NULL, NULL, NULL},
+    {"FilterCommunicationPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
+    {"PowerRequest", NULL, NULL, "PopClosePowerRequestObject", NULL, NULL, NULL, NULL, NULL},
+    {"TmRm", NULL, "TmpOpenResourceManager", "TmpCloseResourceManager", "TmpDeleteResourceManager", NULL, NULL, NULL, NULL},
 };
 
 ULONG procedureRVAs[46][8];
@@ -1713,129 +1709,108 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 	LONG uNameRVA = 0;
 	for(PBYTE i=pStart;i<pEnd;i+=0x10){
 		PULONG Target = (PULONG)i;
+        uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 		if(memcmp(Target, L"Process", 16) == 0){
-			//ULONG64 Addr = ntHeaders->OptionalHeader.ImageBase+(ULONG64)i-(ULONG64)Buffer-(ULONG64)pINIT->PointerToRawData+(ULONG64)pINIT->VirtualAddress;
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Process: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Thread\x00\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Thread: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Job\x00\x9090\x9090\x9090\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Job: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Key\x00\x9090\x9090\x9090\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Key: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"File\x00\x9090\x9090\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("File: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Device\x00\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Device: ", uNameRVA);
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Driver\x00\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Driver: ", uNameRVA);
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"IoCompletion\x00\x9090\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("IoComplection: ", uNameRVA);
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Directory\x00\x9090\x9090\x9090\x9090\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Directory: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"SymbolicLink\x00\x9090\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("SymbolicName: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Section\x00", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Section: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Mutant\x00\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Mutant: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Token\x00\x9090\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Token: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Desktop", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Desktop: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"DebugObject\x00\x9090\x9090\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("DebugObject: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"TpWorkerFactory\x0000", 32) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("TpWorkerFactory: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Session", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Session: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Timer\x00\x9090\x9090", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Timer: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"WindowStation\x00\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("WindowStation: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"Profile", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("Profile: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
 		if(memcmp(Target, L"PowerRequest\x00\x9090\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 			printf("PowerRequest: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;

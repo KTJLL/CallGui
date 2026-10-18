@@ -421,12 +421,12 @@ BOOL QueryObjectHook(HWND hwndListView){
 	}
 	
 	while (index < 47) {
-		for(int i=1;i<9;i++){
-			if(!procedureNames[index][i]){
+		for(int i=0;i<8;i++){
+			if(!(procedureNames[index].ProcedureName[i])){
 				continue;
 			}
 			lvi.iSubItem = 0;
-			strcpy(Buffer, procedureNames[index][i]);
+			strcpy(Buffer, procedureNames[index].ProcedureName[i]);
 			SendMessage(hwndListView, LVM_INSERTITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
 			sprintf(Buffer, "-");
@@ -438,7 +438,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 			sprintf(Buffer, "0x%016llX", 0);
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
-			sprintf(Buffer, procedureNames[index][0]);
+			sprintf(Buffer, procedureNames[index].ProcedureName[i]);
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iItem ++;
 		}
