@@ -84,7 +84,7 @@ BOOL ShowWindowWithLock(HWND hwndCur, HWND hwndTar, LPCSTR name1, LPCSTR name2, 
 	EnableWindow(hwndCur, FALSE);
 	SetForegroundWindow(hwndTar);
 	CHAR Full[MAX_PATH], temp1[MAX_PATH];
-	sprintf(temp1, "[%ld]的", dwID);
+	sprintf(temp1, "[%lld]的", dwID);
 	strcpy(Full, name1);
 	strcat(Full, temp1);
 	strcat(Full, name2);
@@ -376,11 +376,14 @@ BOOL QuerySSSDTFunctions(HWND hwndListView) {
 }
 
 BOOL QueryObjectHook(HWND hwndListView){
-	QUERY_OBJECT_TYPE_CALLBACK_INFORMATION pQoin;
+	//QUERY_OBJECT_TYPE_CALLBACK_INFORMATION pQoin;
+	DWORD dwSize = sizeof(QUERY_OBJECT_TYPE_CALLBACK_INFORMATION) + 1023 * sizeof(CALLBACK_INFORMATION);
+	PQUERY_OBJECT_TYPE_CALLBACK_INFORMATION pQoin = (PQUERY_OBJECT_TYPE_CALLBACK_INFORMATION)malloc(dwSize);
+
 	DWORD dwReturn;
 	ShowWindow(hwndListView, SW_HIDE);
 	SendMessage(hwndListView, LVM_DELETEALLITEMS, 0, 0);
-	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_OBJECT_TYPE_CALLBACK, NULL, 0, (PVOID)&pQoin, sizeof(QUERY_OBJECT_TYPE_CALLBACK_INFORMATION), &dwReturn, NULL)) {
+	if (!DeviceIoControl(hSys, CTL_CODE_QUERY_OBJECT_TYPE_CALLBACK, NULL, 0, (PVOID)pQoin, dwSize, &dwReturn, NULL)) {
 		SetWindowText(hInfoTextWnd, "ObjectHook个数: 0 ObjectType_Callback个数: 0");
 		ShowWindow(hwndListView, SW_SHOW);
 		return FALSE;
@@ -392,10 +395,9 @@ BOOL QueryObjectHook(HWND hwndListView){
 	lvi.pszText = Buffer;
 	memset(Buffer, 0, sizeof(Buffer));
 	USHORT index = 0;
-	DWORD dwSize;
-	while (index < pQoin.numberOfCallbacks) {
+	while (index < pQoin->numberOfCallbacks) {
 		for(int i=0;i<2;i++){
-			ULONG64 Addr = (i == 0 ? pQoin.infos[index].PostCallback : pQoin.infos[index].PreCallback);
+			ULONG64 Addr = (i == 0 ? pQoin->infos[index].PostCallback : pQoin->infos[index].PreCallback);
 			if(!Addr){
 				continue;
 			}
@@ -419,7 +421,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 		}
 	}
 	
-	while (index < 47) {
+	while (index < 46) {
 		for(int i=0;i<8;i++){
 			if(!(procedureNames[index].ProcedureName[i])){
 				continue;
@@ -434,7 +436,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 			strcpy(Buffer, "ObjectHook");
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
-			sprintf(Buffer, "0x%016llX", 0);
+			sprintf(Buffer, "0x%016llX", (ULONG64)0);
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
 			sprintf(Buffer, procedureNames[index].ProcedureName[i]);
@@ -446,7 +448,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 	}
 	
 	//free(pQsin);
-	sprintf(Buffer, "ObjectHook个数: %d ObjectType_Callback个数: %d", 0, (ULONG)pQoin.numberOfCallbacks);
+	sprintf(Buffer, "ObjectHook个数: %d ObjectType_Callback个数: %d", 0, (ULONG)pQoin->numberOfCallbacks);
 	SetWindowText(hInfoTextWnd, Buffer);
 	ShowWindow(hwndListView, SW_SHOW);
 	return TRUE;
