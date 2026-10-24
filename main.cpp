@@ -9,7 +9,6 @@
 #include <psapi.h>
 #include <time.h>
 
-#include "data.h"
 #include "defines.h"
 #include "main.h"
 
@@ -1741,7 +1740,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DWORD bytesWritten;
 	SetFilePointer(hFile, 0, NULL, FILE_END);
 	SetEndOfFile(hFile);
-	WriteFile(hFile, ucDataBlock, sizeof(ucDataBlock), &bytesWritten, NULL);
+
+	HRSRC hResInfo = FindResource(NULL, MAKEINTRESOURCE(2000), RT_RCDATA);
+	if (!hResInfo){
+		printf("[ FATAL ] Cannot find resource. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
+	}
+
+	HGLOBAL hResData = LoadResource(NULL, hResInfo);
+	if (!hResData){
+		printf("[ FATAL ] Cannot load resource. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
+	}
+
+	DWORD dwDataSize = SizeofResource(NULL, hResInfo);
+	LPVOID pData = LockResource(hResData);
+
+	if (!dwDataSize || dwDataSize == 0){
+		printf("[ FATAL ] Resource error. Error: %d. Use %.0f ms\n", GetLastError(), difftime(clock(), eachTime));
+	}
+
+	WriteFile(hFile, pData, dwDataSize, &bytesWritten, NULL);
 	CloseHandle(hFile);
 	
 	printf("[ INIT ] Write file done. Use %.0f ms\n", difftime(clock(), eachTime));

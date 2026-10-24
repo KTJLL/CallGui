@@ -74,6 +74,8 @@ enum {
 #define METHOD_BUFFERED                 0
 #define FILE_ANY_ACCESS                 0
 
+#define RC_SYS_FILE 2000
+
 enum {
 	OPEN_PROCESS_IOCTL_BASE = 0x800, 
 	TERMINATE_PROCESS_IOCTL_BASE, 
