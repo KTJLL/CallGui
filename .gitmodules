@@ -1,0 +1,3 @@
+[submodule "subproj/driver"]
+	path = subproj/driver
+	url = https://github.com/KTJLL/CallGui-Driver
