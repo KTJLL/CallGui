@@ -1241,7 +1241,7 @@ const char* sssdtfunc[SSSDT_NUMBERS] = {
     "UserSetWindowLongPtr"
 };
 
-const struct _PROCEDURE_NAMES procedureNames[46] = {
+const PROCEDURE_NAMES procedureNames[46] = {
     {"CmpKeyObjectType", NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL},
     {"IoFileObjectType", NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL},
     {"IoDriverObjectType", NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL},
