@@ -1526,54 +1526,6 @@ int QueryProcedures(ULONG NameRVA, PBYTE Buffer, PIMAGE_SECTION_HEADER pTargetSe
     return 0;
 }
 
-int get(){
-	CHAR NtOsKrnlPath[MAX_PATH];
-	GetSystemDirectoryA(NtOsKrnlPath, MAX_PATH);
-	strcat(NtOsKrnlPath, "\\..\\SysNative\\ntoskrnl.exe");
-
-	HANDLE hFile = CreateFileA(NtOsKrnlPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return FALSE;
-
-	DWORD fileSize = GetFileSize(hFile, NULL);
-	if (fileSize == INVALID_FILE_SIZE) {
-		CloseHandle(hFile);
-		return FALSE;
-	}
-
-	PBYTE Buffer = (PBYTE)VirtualAlloc(NULL, fileSize, MEM_COMMIT, PAGE_READWRITE);
-	if (!Buffer) {
-		CloseHandle(hFile);
-		return FALSE;
-	}
-
-	DWORD bytesRead;
-	if (!ReadFile(hFile, Buffer, fileSize, &bytesRead, NULL)) {
-		CloseHandle(hFile);
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-
-	CloseHandle(hFile);
-
-	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)Buffer;
-	if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-
-	PIMAGE_NT_HEADERS64 ntHeaders = (PIMAGE_NT_HEADERS64)(Buffer + dosHeader->e_lfanew);
-	if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
-		VirtualFree(Buffer, 0, MEM_RELEASE);
-		return FALSE;
-	}
-	
-	PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(ntHeaders);
-
-	
-	VirtualFree(Buffer, 0, MEM_RELEASE);
-	return 0;
-}
-
 BOOL GetOriginDataFromNtOsKrnlImage() {
 	QUERY_SSDT_INFORMATION qsinf;
 	ULONG64 ssdtNumber = SSDT_NUMBERS;
