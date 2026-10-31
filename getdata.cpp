@@ -1242,48 +1242,48 @@ const char* sssdtfunc[SSSDT_NUMBERS] = {
 };
 
 PROCEDURE_NAMES procedureNames[42] = {
-    {"CmpKeyObjectType",        "Key",        {NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL}},
-    {"IoFileObjectType",        "File",       {NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL}},
-    {"IoDriverObjectType",      "Driver",     {NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL}},
-    {"IoDeviceObjectType",      "Device",     {NULL, NULL, NULL, "IopDeleteDevice", "IopParseDevice", "IopGetSetSecurityObject", NULL, NULL}},
-    {"IoCompletionObjectType",  "IoCompletion",{NULL, NULL, "IopCloseIoCompletion", "IopDeleteIoCompletion", NULL, NULL, NULL, NULL}},
-    {"PsJobType",               "Job",        {NULL, NULL, "PspJobClose", "PspJobDelete", NULL, NULL, NULL, NULL}},
-    {"PsThreadType",            "Thread",     {NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, NULL, NULL, NULL}},
-    {"PsProcessType",           "Process",    {NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, NULL, NULL, NULL}},
-    {"ObpDirectoryObjectType",  "Directory",  {NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, NULL, NULL, NULL}},
-    {"ObpSymbolicLinkObjectType","SymbolicLink",{NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", NULL, NULL, NULL}},
-    {"MmSectionObjectType",     "Section",    {NULL, NULL, NULL, "MiSectionDelete", NULL, NULL, NULL, NULL}},
-    {"ExMutantObjectType",      "Mutant",     {NULL, NULL, NULL, "ExpDeleteMutant", NULL, NULL, NULL, NULL}},
-    {"SeTokenObjectType",       "Token",      {NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, NULL, NULL, NULL}},
-    {"AlpcPortObjectType",      "ALPC Port",  {NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, NULL, NULL, NULL}},
-    {"TmTm",                    "TmTm",       {NULL, "FsRtlSyncVolumes", "TmpCloseTransactionManager", "TmpDeleteTransactionManager", NULL, NULL, NULL, NULL}},
-    {"Desktop",                 "Desktop",    {NULL, "ExpWin32OpenProcedure", "ExpWin32CloseProcedure", "ExpWin32DeleteProcedure", "ExpWin32ParseProcedure", NULL, NULL, "ExpWin32DeleteProcedure"}},
-    {"DebugObject",             "DebugObject",{NULL, NULL, "DbgkpCloseObject", "xHalEndOfBoot", NULL, NULL, NULL, NULL}},
-    {"TpWorkerFactory",         "TpWorkerFactory",{NULL, NULL, "ExpCloseWorkerFactory", "ExpDeleteWorkerFactory", NULL, NULL, NULL, NULL}},
-    {"PcwObject",               "PcwObject",  {NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
-    {"WmiGuid",                 "WmiGuid",    {NULL, NULL, NULL, "WmipDeleteMethod", NULL, "WmipDeleteMethod", NULL, NULL}},
-    {"EtwRegistration",         "EtwRegistration",{NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL}},
-    {"Session",                 "Session",    {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
-    {"Timer",                   "Timer",      {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
-    {"WindowStation",           "WindowStation",{NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", "ParseProcedure", NULL, NULL, "OkayToCloseProcedure"}},
-    {"Profile",                 "Profile",    {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
-    {"EtwConsumer",             "EtwConsumer",{NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL}},
-    {"TmTx",                    "TmTx",       {NULL, NULL, "TmpCloseTransaction", "TmpDeleteTransaction", NULL, NULL, NULL, NULL}},
-    {"Callback",                "Callback",   {NULL, NULL, NULL, "FsRtlInitializeOplock", NULL, NULL, NULL, NULL}},
-    {"FilterConnectionPort",    "FilterConnectionPort",{NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
-    {"TmEn",                    "TmEn",       {NULL, NULL, "TmpCloseEnlistment", "TmpDeleteEnlistment", NULL, NULL, NULL, NULL}},
-    {"FilterCommunicationPort", "FilterCommunicationPort",{NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
-    {"PowerRequest",            "PowerRequest",{NULL, NULL, "PopClosePowerRequestObject", NULL, NULL, NULL, NULL, NULL}},
-    {"TmRm",                    "TmRm",       {NULL, "TmpOpenResourceManager", "TmpCloseResourceManager", "TmpDeleteResourceManager", NULL, NULL, NULL, NULL}},
-    {"ObpTypeObjectType",       "ObpTypeObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"ExEventObjectType",       "ExEventObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"ExSemaphoreObjectType",   "ExSemaphoreObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"Adapter",                 "Adapter",    {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"EventPair",               "EventPair",  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"KeyedEvent",              "KeyedEvent", {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"UserApcReserve",          "UserApcReserve",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"Controller",              "Controller", {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
-    {"IoCompletionReserve",     "IoCompletionReserve",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"CmpKeyObjectType",        L"Key",        {NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL}},
+    {"IoFileObjectType",        L"File",       {NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL}},
+    {"IoDriverObjectType",      L"Driver",     {NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL}},
+    {"IoDeviceObjectType",      L"Device",     {NULL, NULL, NULL, "IopDeleteDevice", "IopParseDevice", "IopGetSetSecurityObject", NULL, NULL}},
+    {"IoCompletionObjectType",  L"IoCompletion",{NULL, NULL, "IopCloseIoCompletion", "IopDeleteIoCompletion", NULL, NULL, NULL, NULL}},
+    {"PsJobType",               L"Job",        {NULL, NULL, "PspJobClose", "PspJobDelete", NULL, NULL, NULL, NULL}},
+    {"PsThreadType",            L"Thread",     {NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, NULL, NULL, NULL}},
+    {"PsProcessType",           L"Process",    {NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, NULL, NULL, NULL}},
+    {"ObpDirectoryObjectType",  L"Directory",  {NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, NULL, NULL, NULL}},
+    {"ObpSymbolicLinkObjectType",L"SymbolicLink",{NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", NULL, NULL, NULL}},
+    {"MmSectionObjectType",     L"Section",    {NULL, NULL, NULL, "MiSectionDelete", NULL, NULL, NULL, NULL}},
+    {"ExMutantObjectType",      L"Mutant",     {NULL, NULL, NULL, "ExpDeleteMutant", NULL, NULL, NULL, NULL}},
+    {"SeTokenObjectType",       L"Token",      {NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, NULL, NULL, NULL}},
+    {"AlpcPortObjectType",      L"ALPC Port",  {NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, NULL, NULL, NULL}},
+    {"TmTm",                    L"TmTm",       {NULL, "FsRtlSyncVolumes", "TmpCloseTransactionManager", "TmpDeleteTransactionManager", NULL, NULL, NULL, NULL}},
+    {"Desktop",                 L"Desktop",    {NULL, "ExpWin32OpenProcedure", "ExpWin32CloseProcedure", "ExpWin32DeleteProcedure", "ExpWin32ParseProcedure", NULL, NULL, "ExpWin32DeleteProcedure"}},
+    {"DebugObject",             L"DebugObject",{NULL, NULL, "DbgkpCloseObject", "xHalEndOfBoot", NULL, NULL, NULL, NULL}},
+    {"TpWorkerFactory",         L"TpWorkerFactory",{NULL, NULL, "ExpCloseWorkerFactory", "ExpDeleteWorkerFactory", NULL, NULL, NULL, NULL}},
+    {"PcwObject",               L"PcwObject",  {NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"WmiGuid",                 L"WmiGuid",    {NULL, NULL, NULL, "WmipDeleteMethod", NULL, "WmipDeleteMethod", NULL, NULL}},
+    {"EtwRegistration",         L"EtwRegistration",{NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL}},
+    {"Session",                 L"Session",    {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"Timer",                   L"Timer",      {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"WindowStation",           L"WindowStation",{NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", "ParseProcedure", NULL, NULL, "OkayToCloseProcedure"}},
+    {"Profile",                 L"Profile",    {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"EtwConsumer",             L"EtwConsumer",{NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL}},
+    {"TmTx",                    L"TmTx",       {NULL, NULL, "TmpCloseTransaction", "TmpDeleteTransaction", NULL, NULL, NULL, NULL}},
+    {"Callback",                L"Callback",   {NULL, NULL, NULL, "FsRtlInitializeOplock", NULL, NULL, NULL, NULL}},
+    {"FilterConnectionPort",    L"FilterConnectionPort",{NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"TmEn",                    L"TmEn",       {NULL, NULL, "TmpCloseEnlistment", "TmpDeleteEnlistment", NULL, NULL, NULL, NULL}},
+    {"FilterCommunicationPort", L"FilterCommunicationPort",{NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"PowerRequest",            L"PowerRequest",{NULL, NULL, "PopClosePowerRequestObject", NULL, NULL, NULL, NULL, NULL}},
+    {"TmRm",                    L"TmRm",       {NULL, "TmpOpenResourceManager", "TmpCloseResourceManager", "TmpDeleteResourceManager", NULL, NULL, NULL, NULL}},
+    {"ObpTypeObjectType",       L"ObpTypeObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"ExEventObjectType",       L"ExEventObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"ExSemaphoreObjectType",   L"ExSemaphoreObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"Adapter",                 L"Adapter",    {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"EventPair",               L"EventPair",  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"KeyedEvent",              L"KeyedEvent", {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"UserApcReserve",          L"UserApcReserve",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"Controller",              L"Controller", {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"IoCompletionReserve",     L"IoCompletionReserve",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
 };
 
 ULONG64 procedureVAs[42][8];
@@ -1527,6 +1527,21 @@ int QueryProcedures(ULONG NameRVA, PBYTE Buffer, PIMAGE_SECTION_HEADER pTargetSe
     return 0;
 }
 
+static int is_pad(UINT8 b) { return b == 0x00 || b == 0x90; }
+static int verify_struct_name(const UINT8 *i, size_t L,
+                              const UINT8 *pStart, const UINT8 *pEnd)
+{
+    size_t S = ((L + 15) / 16) * 16;
+
+    if (L == S) return 1;                       /* 无填充，不验证 */
+    if (i + S > pEnd) return 0;                 /* 越界 */
+
+    for (size_t k = L; k < S; ++k)              /* 尾部必须全为 00 或 90 */
+        if (!is_pad(i[k])) return 0;
+
+    return 1;
+}
+
 BOOL GetOriginDataFromNtOsKrnlImage() {
 	QUERY_SSDT_INFORMATION qsinf;
 	ULONG64 ssdtNumber = SSDT_NUMBERS;
@@ -1663,41 +1678,15 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
     PBYTE pEnd = pStart + fileSize;
 	LONG uNameRVA = 0;
 
-    // 构建特征
-    size_t n = sizeof(procedureNames) / sizeof(procedureNames[0]);
-
-    for (size_t i = 0; i < n; ++i) {
-        const char *s = procedureNames[i].ShortName;
-        size_t sl = 0;
-        while (s[sl]) ++sl;                         /* strlen(ShortName) */
-
-        size_t total;
-        if ((sl + 1) * 2 <= 16) {
-            total = 16;                             /* 短名 + null 放得进 16B */
-        } else {
-            total = 32;
-            if ((sl + 1) * 2 > 32) sl = 15;         /* 超长截断到 15 字符 + null */
-        }
-
-        size_t k;
-        for (k = 0; k < sl; ++k) {                  /* 宽字符 */
-            procedureNames[i].pattern[2 * k]     = (UINT8)s[k];
-            procedureNames[i].pattern[2 * k + 1] = 0x00;
-        }
-        procedureNames[i].pattern[2 * k]     = 0x00;/* 宽 null 终止符 */
-        procedureNames[i].pattern[2 * k + 1] = 0x00;
-        ++k;
-        for (size_t b = 2 * k; b < total; ++b)      /* 尾部补 0x90 */
-            procedureNames[i].pattern[b] = 0x90;
-
-        procedureNames[i].Length = (UINT)total;
+    for (int i=0;i<42;i++){
+        procedureNames[i].Length = (wcslen(procedureNames[i].ShortName) + 1) * sizeof(WCHAR);
     }
 
     // 直接扫所有内存太慢了，使用位图加速
     PBYTE pBitmap = (PBYTE)malloc(8192);
     memset(pBitmap, 0, 8192);
     for (int i=0;i<42;i++){
-        UINT8* d = procedureNames[i].pattern;
+        UINT8* d = (UINT8*)procedureNames[i].ShortName;
         UINT16 Pattern = (UINT16)(d[0] | (d[2] << 8)); // 取前2个字节
         BM_SET(pBitmap, Pattern);
     }
@@ -1721,8 +1710,11 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
             //uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 
             for (int j=0;j<42;j++){
-                if (memcmp(Target, procedureNames[j].pattern, procedureNames[j].Length) == 0){
-                    QueryProcedures(uNameRVA, Buffer, pEachSection, pSection, ntHeaders, ObCreateObjectTypeExRVA, i, j, qsinf.KernelBase);
+                if (!verify_struct_name(i, procedureNames[j].Length, pStart, pEnd)) continue;
+
+                if (memcmp(Target, procedureNames[j].ShortName, procedureNames[j].Length) == 0){
+                    int result = QueryProcedures(uNameRVA, Buffer, pEachSection, pSection, ntHeaders, ObCreateObjectTypeExRVA, i, j, qsinf.KernelBase);
+                    if (result == 1) printf("误报 0x%X\n", uNameRVA);        
                 }
             }
         }

@@ -14,7 +14,7 @@ extern const char* sssdtfunc[SSSDT_NUMBERS];
 
 typedef struct _PROCEDURE_NAMES {
     const char *ObjectName;
-    const char *ShortName;
+    const WCHAR *ShortName;
     const char *ProcedureName[8];
     UINT8 pattern[32];
     UINT Length;
