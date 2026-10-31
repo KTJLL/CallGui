@@ -1241,7 +1241,7 @@ const char* sssdtfunc[SSSDT_NUMBERS] = {
     "UserSetWindowLongPtr"
 };
 
-const PROCEDURE_NAMES procedureNames[46] = {
+PROCEDURE_NAMES procedureNames[42] = {
     {"CmpKeyObjectType", NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL},
     {"IoFileObjectType", NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL},
     {"IoDriverObjectType", NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL},
@@ -1286,7 +1286,7 @@ const PROCEDURE_NAMES procedureNames[46] = {
     {"IoCompletionReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
 };
 
-ULONG procedureRVAs[46][8];
+ULONG procedureRVAs[42][8];
 
 DWORD RvaToFoa(PIMAGE_NT_HEADERS64 ntHeader, PIMAGE_SECTION_HEADER pSection, DWORD RVA) {
 	for (int i = 0; i < ntHeader->FileHeader.NumberOfSections; i++, pSection++) {
@@ -1308,7 +1308,7 @@ DWORD FoaToRva(PIMAGE_NT_HEADERS64 ntHeaders, PIMAGE_SECTION_HEADER pSection, DW
 }
 
 int QueryProcedures(ULONG NameRVA, PBYTE Buffer, PIMAGE_SECTION_HEADER pTargetSection, PIMAGE_SECTION_HEADER pSection, \
-					PIMAGE_NT_HEADERS64 ntHeaders, ULONG ObCreateObjectTypeExRVA, PBYTE pString){
+					PIMAGE_NT_HEADERS64 ntHeaders, ULONG ObCreateObjectTypeExRVA, PBYTE pString, ULONG DataIndex){
 	ULONG pTextStartFOA = pTargetSection->PointerToRawData;
 	ULONG pTextStartRVA = pTargetSection->VirtualAddress;
 	LONG pTextLoadOffset = pTextStartRVA - pTextStartFOA;
@@ -1521,6 +1521,7 @@ int QueryProcedures(ULONG NameRVA, PBYTE Buffer, PIMAGE_SECTION_HEADER pTargetSe
 	
 	for(int i=0;i<8;i++){
 		printf("0x%llX ", Procedures[i]);
+        procedureRVAs[DataIndex][i] = Procedures[i];
 	}
 	printf("\n");
     return 0;
@@ -1656,8 +1657,10 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 		}
 	}
 	
-	PBYTE pStart = Buffer + pINIT->PointerToRawData;
-	PBYTE pEnd = pStart + pINIT->SizeOfRawData;
+	//PBYTE pStart = Buffer + pINIT->PointerToRawData;
+	//PBYTE pEnd = pStart + pINIT->SizeOfRawData;
+    PBYTE pStart = Buffer;
+    PBYTE pEnd = pStart + fileSize;
 	LONG uNameRVA = 0;
 
     // 直接扫所有内存太慢了，使用位图加速
@@ -1666,6 +1669,34 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
     for (int i=0;i<42;i++){
         UINT16 Pattern = *(PUINT16)(procedureNames[i].ObjectName); // 取前2个字节
         BM_SET(pBitmap, Pattern);
+    }
+
+    // 构建特征
+    for (size_t i = 0; i < 42; ++i) {
+        const char *s = procedureNames[i].ObjectName;
+        size_t sl = 0;
+        while (s[sl]) ++sl;                         /* strlen */
+
+        size_t total;
+        if ((sl + 1) * 2 <= 16) {
+            total = 16;                             /* 名字 + null 放得进 16B */
+        } else {
+            total = 32;
+            if ((sl + 1) * 2 > 32) sl = 15;         /* 超长：截断到 15 字符 + null = 32B */
+        }
+
+        size_t k;
+        for (k = 0; k < sl; ++k) {                  /* 宽字符 */
+            procedureNames[i].pattern[2 * k]     = (UINT8)s[k];
+            procedureNames[i].pattern[2 * k + 1] = 0x00;
+        }
+        procedureNames[i].pattern[2 * k]     = 0x00;/* 宽 null 终止符 */
+        procedureNames[i].pattern[2 * k + 1] = 0x00;
+        ++k;
+        for (size_t b = 2 * k; b < total; ++b)      /* 尾部补 0x90 */
+            procedureNames[i].pattern[b] = 0x90;
+
+        procedureNames[i].Length = (UINT)total;
     }
 
 	for(PBYTE i=pStart;i<pEnd-0x20;i+=0x1){
@@ -1677,7 +1708,14 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
         if (!BM_TEST(pBitmap, key)) continue;
 
         uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
-		if(memcmp(Target, L"Process", 16) == 0){
+
+        for (int j=0;j<42;j++){
+            if (memcmp(Target, procedureNames[j].pattern, procedureNames[j].Length) == 0){
+                QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i, j);
+            }
+        }
+
+		/*if(memcmp(Target, L"Process", 16) == 0){
 			printf("Process: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
@@ -1786,7 +1824,7 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 			printf("WmiGuid: ");
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			break;
-		}
+		}*/
 	}
 	
 	/*for(PBYTE i=pStart;i<pEnd;i++){
@@ -1800,7 +1838,7 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 		}
 	}*/
 	
-	pStart = Buffer + pPAGE->PointerToRawData;
+	/*pStart = Buffer + pPAGE->PointerToRawData;
 	pEnd = pStart + pPAGE->SizeOfRawData;
 	for(PBYTE i=pStart;i<pEnd;i+=16){
         if (*(i+1) != 0x00) continue;
@@ -1831,8 +1869,7 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
         if (*(i+3) != 0x00) continue;
 		PULONG Target = (PULONG)i;
         
-        UINT16 key = i[0] | (i[2] << 8);
-        if (!BM_TEST(pBitmap, key)) continue;
+        if(memcmp(Target, L"Tm", 4)) continue;
 
 		if(memcmp(Target, L"TmTm\x00\x00\x00\x00", 16) == 0){
 			uNameRVA = i-Buffer-pRdata->PointerToRawData+pRdata->VirtualAddress;
@@ -1870,7 +1907,7 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 			QueryProcedures(uNameRVA, Buffer, pText, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
-	}
+	}*/
 
 	VirtualFree(Buffer, 0, MEM_RELEASE);
 	return TRUE;

@@ -436,7 +436,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 			strcpy(Buffer, "ObjectHook");
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
-			sprintf(Buffer, "0x%016llX", (ULONG64)0);
+			sprintf(Buffer, "0x%016llX", (ULONG64)procedureRVAs[index][i]);
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
 			sprintf(Buffer, procedureNames[index].ProcedureName[i]);
