@@ -1250,21 +1250,16 @@ const PROCEDURE_NAMES procedureNames[46] = {
     {"PsJobType", NULL, NULL, "PspJobClose", "PspJobDelete", NULL, NULL, NULL, NULL},
     {"PsThreadType", NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, NULL, NULL, NULL},
     {"PsProcessType", NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, NULL, NULL, NULL},
-    {"ObpTypeObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {"ObpDirectoryObjectType", NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, NULL, NULL, NULL},
     {"ObpSymbolicLinkObjectType", NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", NULL, NULL, NULL},
     {"MmSectionObjectType", NULL, NULL, NULL, "MiSectionDelete", NULL, NULL, NULL, NULL},
-    {"ExEventObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {"ExMutantObjectType", NULL, NULL, NULL, "ExpDeleteMutant", NULL, NULL, NULL, NULL},
-    {"ExSemaphoreObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {"SeTokenObjectType", NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, NULL, NULL, NULL},
     {"AlpcPortObjectType", NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, NULL, NULL, NULL},
     {"TmTm", NULL, "FsRtlSyncVolumes", "TmpCloseTransactionManager", "TmpDeleteTransactionManager", NULL, NULL, NULL, NULL},
     {"Desktop", NULL, "ExpWin32OpenProcedure", "ExpWin32CloseProcedure", "ExpWin32DeleteProcedure", "ExpWin32ParseProcedure", NULL, NULL, "ExpWin32DeleteProcedure"},
     {"DebugObject", NULL, NULL, "DbgkpCloseObject", "xHalEndOfBoot", NULL, NULL, NULL, NULL},
     {"TpWorkerFactory", NULL, NULL, "ExpCloseWorkerFactory", "ExpDeleteWorkerFactory", NULL, NULL, NULL, NULL},
-    {"Adapter", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"EventPair", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {"PcwObject", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
     {"WmiGuid", NULL, NULL, NULL, "WmipDeleteMethod", NULL, "WmipDeleteMethod", NULL, NULL},
     {"EtwRegistration", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
@@ -1274,16 +1269,21 @@ const PROCEDURE_NAMES procedureNames[46] = {
     {"Profile", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
     {"EtwConsumer", NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL},
     {"TmTx", NULL, NULL, "TmpCloseTransaction", "TmpDeleteTransaction", NULL, NULL, NULL, NULL},
-    {"KeyedEvent", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {"Callback", NULL, NULL, NULL, "FsRtlInitializeOplock", NULL, NULL, NULL, NULL},
     {"FilterConnectionPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"UserApcReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"Controller", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"IoCompletionReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
     {"TmEn", NULL, NULL, "TmpCloseEnlistment", "TmpDeleteEnlistment", NULL, NULL, NULL, NULL},
     {"FilterCommunicationPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
     {"PowerRequest", NULL, NULL, "PopClosePowerRequestObject", NULL, NULL, NULL, NULL, NULL},
     {"TmRm", NULL, "TmpOpenResourceManager", "TmpCloseResourceManager", "TmpDeleteResourceManager", NULL, NULL, NULL, NULL},
+    {"ObpTypeObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"ExEventObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"ExSemaphoreObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"Adapter", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"EventPair", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"KeyedEvent", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"UserApcReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"Controller", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"IoCompletionReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
 };
 
 ULONG procedureRVAs[46][8];
@@ -1659,8 +1659,23 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 	PBYTE pStart = Buffer + pINIT->PointerToRawData;
 	PBYTE pEnd = pStart + pINIT->SizeOfRawData;
 	LONG uNameRVA = 0;
-	for(PBYTE i=pStart;i<pEnd;i+=0x10){
+
+    // 直接扫所有内存太慢了，使用位图加速
+    PBYTE pBitmap = (PBYTE)malloc(8192);
+    memset(pBitmap, 0, 8192);
+    for (int i=0;i<42;i++){
+        UINT16 Pattern = *(PUINT16)(procedureNames[i].ObjectName); // 取前2个字节
+        BM_SET(pBitmap, Pattern);
+    }
+
+	for(PBYTE i=pStart;i<pEnd-0x20;i+=0x1){
+        if (*(i+1) != 0x00) continue;
+        if (*(i+3) != 0x00) continue;
 		PULONG Target = (PULONG)i;
+        
+        UINT16 key = (unsigned)i[0] | (unsigned)(i[2] << 8);
+        if (!BM_TEST(pBitmap, key)) continue;
+
         uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
 		if(memcmp(Target, L"Process", 16) == 0){
 			printf("Process: ");
@@ -1767,9 +1782,15 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			continue;
 		}
+		if(memcmp(Target, L"WmiGuid", 16) == 0){
+			printf("WmiGuid: ");
+			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
+			break;
+		}
 	}
 	
-	for(PBYTE i=pStart;i<pEnd;i++){
+	/*for(PBYTE i=pStart;i<pEnd;i++){
+        if (*(i+1) != 0x00) continue;
 		PULONG Target = (PULONG)i;
 		if(memcmp(Target, L"WmiGuid", 16) == 0){
 			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
@@ -1777,12 +1798,18 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
 			break;
 		}
-	}
+	}*/
 	
 	pStart = Buffer + pPAGE->PointerToRawData;
 	pEnd = pStart + pPAGE->SizeOfRawData;
 	for(PBYTE i=pStart;i<pEnd;i+=16){
+        if (*(i+1) != 0x00) continue;
+        if (*(i+3) != 0x00) continue;
 		PULONG Target = (PULONG)i;
+        
+        UINT16 key = i[0] | (i[2] << 8);
+        if (!BM_TEST(pBitmap, key)) continue;
+
 		if(memcmp(Target, L"ALPC Port\x00\x9090\x9090\x9090\x9090\x9090\x9090\x9090", 32) == 0){
 			uNameRVA = i-Buffer-pPAGE->PointerToRawData+pPAGE->VirtualAddress;
 			printf("ALPC Port: ");
@@ -1800,7 +1827,13 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
 	pStart = Buffer + pRdata->PointerToRawData;
 	pEnd = pStart + pRdata->SizeOfRawData;
 	for(PBYTE i=pStart;i<pEnd;i+=16){
+        if (*(i+1) != 0x00) continue;
+        if (*(i+3) != 0x00) continue;
 		PULONG Target = (PULONG)i;
+        
+        UINT16 key = i[0] | (i[2] << 8);
+        if (!BM_TEST(pBitmap, key)) continue;
+
 		if(memcmp(Target, L"TmTm\x00\x00\x00\x00", 16) == 0){
 			uNameRVA = i-Buffer-pRdata->PointerToRawData+pRdata->VirtualAddress;
 			printf("TmTm: ");

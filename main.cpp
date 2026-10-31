@@ -421,7 +421,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 		}
 	}
 	
-	while (index < 46) {
+	while (index < 42) {
 		for(int i=0;i<8;i++){
 			if(!(procedureNames[index].ProcedureName[i])){
 				continue;
