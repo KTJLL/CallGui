@@ -421,7 +421,7 @@ BOOL QueryObjectHook(HWND hwndListView){
 		}
 	}
 	
-	while (index < 42) {
+	for (int index=0;index<42;index++){
 		for(int i=0;i<8;i++){
 			if(!(procedureNames[index].ProcedureName[i])){
 				continue;
@@ -436,15 +436,13 @@ BOOL QueryObjectHook(HWND hwndListView){
 			strcpy(Buffer, "ObjectHook");
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
-			sprintf(Buffer, "0x%016llX", (ULONG64)procedureRVAs[index][i]);
+			sprintf(Buffer, "0x%016llX", (ULONG64)procedureVAs[index][i]);
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iSubItem ++;
-			sprintf(Buffer, procedureNames[index].ProcedureName[i]);
+			sprintf(Buffer, procedureNames[index].ObjectName);
 			SendMessage(hwndListView, LVM_SETITEM, 0, (LPARAM)&lvi);
 			lvi.iItem ++;
 		}
-
-		index++;
 	}
 	
 	//free(pQsin);
