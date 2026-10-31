@@ -1242,51 +1242,51 @@ const char* sssdtfunc[SSSDT_NUMBERS] = {
 };
 
 PROCEDURE_NAMES procedureNames[42] = {
-    {"CmpKeyObjectType", NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL},
-    {"IoFileObjectType", NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL},
-    {"IoDriverObjectType", NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL},
-    {"IoDeviceObjectType", NULL, NULL, NULL, "IopDeleteDevice", "IopParseDevice", "IopGetSetSecurityObject", NULL, NULL},
-    {"IoCompletionObjectType", NULL, NULL, "IopCloseIoCompletion", "IopDeleteIoCompletion", NULL, NULL, NULL, NULL},
-    {"PsJobType", NULL, NULL, "PspJobClose", "PspJobDelete", NULL, NULL, NULL, NULL},
-    {"PsThreadType", NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, NULL, NULL, NULL},
-    {"PsProcessType", NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, NULL, NULL, NULL},
-    {"ObpDirectoryObjectType", NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, NULL, NULL, NULL},
-    {"ObpSymbolicLinkObjectType", NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", NULL, NULL, NULL},
-    {"MmSectionObjectType", NULL, NULL, NULL, "MiSectionDelete", NULL, NULL, NULL, NULL},
-    {"ExMutantObjectType", NULL, NULL, NULL, "ExpDeleteMutant", NULL, NULL, NULL, NULL},
-    {"SeTokenObjectType", NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, NULL, NULL, NULL},
-    {"AlpcPortObjectType", NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, NULL, NULL, NULL},
-    {"TmTm", NULL, "FsRtlSyncVolumes", "TmpCloseTransactionManager", "TmpDeleteTransactionManager", NULL, NULL, NULL, NULL},
-    {"Desktop", NULL, "ExpWin32OpenProcedure", "ExpWin32CloseProcedure", "ExpWin32DeleteProcedure", "ExpWin32ParseProcedure", NULL, NULL, "ExpWin32DeleteProcedure"},
-    {"DebugObject", NULL, NULL, "DbgkpCloseObject", "xHalEndOfBoot", NULL, NULL, NULL, NULL},
-    {"TpWorkerFactory", NULL, NULL, "ExpCloseWorkerFactory", "ExpDeleteWorkerFactory", NULL, NULL, NULL, NULL},
-    {"PcwObject", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"WmiGuid", NULL, NULL, NULL, "WmipDeleteMethod", NULL, "WmipDeleteMethod", NULL, NULL},
-    {"EtwRegistration", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"Session", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"Timer", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"WindowStation", NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", "ParseProcedure", NULL, NULL, "OkayToCloseProcedure"},
-    {"Profile", NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"EtwConsumer", NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL},
-    {"TmTx", NULL, NULL, "TmpCloseTransaction", "TmpDeleteTransaction", NULL, NULL, NULL, NULL},
-    {"Callback", NULL, NULL, NULL, "FsRtlInitializeOplock", NULL, NULL, NULL, NULL},
-    {"FilterConnectionPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"TmEn", NULL, NULL, "TmpCloseEnlistment", "TmpDeleteEnlistment", NULL, NULL, NULL, NULL},
-    {"FilterCommunicationPort", NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL},
-    {"PowerRequest", NULL, NULL, "PopClosePowerRequestObject", NULL, NULL, NULL, NULL, NULL},
-    {"TmRm", NULL, "TmpOpenResourceManager", "TmpCloseResourceManager", "TmpDeleteResourceManager", NULL, NULL, NULL, NULL},
-    {"ObpTypeObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"ExEventObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"ExSemaphoreObjectType", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"Adapter", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"EventPair", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"KeyedEvent", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"UserApcReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"Controller", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-    {"IoCompletionReserve", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+    {"CmpKeyObjectType",        "Key",        {NULL, NULL, "CmpCloseKeyObject", "CmpDeleteKeyObject", "CmpParseKey", "CmpSecurityMethod", "CmpQueryKeyName", NULL}},
+    {"IoFileObjectType",        "File",       {NULL, NULL, "IopCloseFile", "IopDeleteFile", "IopParseFile", "IopGetSetSecurityObject", "IopQueryName", NULL}},
+    {"IoDriverObjectType",      "Driver",     {NULL, NULL, NULL, "IopDeleteDriver", NULL, NULL, NULL, NULL}},
+    {"IoDeviceObjectType",      "Device",     {NULL, NULL, NULL, "IopDeleteDevice", "IopParseDevice", "IopGetSetSecurityObject", NULL, NULL}},
+    {"IoCompletionObjectType",  "IoCompletion",{NULL, NULL, "IopCloseIoCompletion", "IopDeleteIoCompletion", NULL, NULL, NULL, NULL}},
+    {"PsJobType",               "Job",        {NULL, NULL, "PspJobClose", "PspJobDelete", NULL, NULL, NULL, NULL}},
+    {"PsThreadType",            "Thread",     {NULL, "PspThreadOpen", NULL, "PspThreadDelete", NULL, NULL, NULL, NULL}},
+    {"PsProcessType",           "Process",    {NULL, "PspProcessOpen", "PspProcessClose", "PspProcessDelete", NULL, NULL, NULL, NULL}},
+    {"ObpDirectoryObjectType",  "Directory",  {NULL, NULL, "ObpCloseDirectoryObject", NULL, NULL, NULL, NULL, NULL}},
+    {"ObpSymbolicLinkObjectType","SymbolicLink",{NULL, NULL, NULL, "ObpDeleteSymbolicLink", "ObpParseSymbolicLink", NULL, NULL, NULL}},
+    {"MmSectionObjectType",     "Section",    {NULL, NULL, NULL, "MiSectionDelete", NULL, NULL, NULL, NULL}},
+    {"ExMutantObjectType",      "Mutant",     {NULL, NULL, NULL, "ExpDeleteMutant", NULL, NULL, NULL, NULL}},
+    {"SeTokenObjectType",       "Token",      {NULL, NULL, NULL, "SepTokenDeleteMethod", NULL, NULL, NULL, NULL}},
+    {"AlpcPortObjectType",      "ALPC Port",  {NULL, "AlpcpOpenPort", "AlpcpClosePort", "AlpcpDeletePort", NULL, NULL, NULL, NULL}},
+    {"TmTm",                    "TmTm",       {NULL, "FsRtlSyncVolumes", "TmpCloseTransactionManager", "TmpDeleteTransactionManager", NULL, NULL, NULL, NULL}},
+    {"Desktop",                 "Desktop",    {NULL, "ExpWin32OpenProcedure", "ExpWin32CloseProcedure", "ExpWin32DeleteProcedure", "ExpWin32ParseProcedure", NULL, NULL, "ExpWin32DeleteProcedure"}},
+    {"DebugObject",             "DebugObject",{NULL, NULL, "DbgkpCloseObject", "xHalEndOfBoot", NULL, NULL, NULL, NULL}},
+    {"TpWorkerFactory",         "TpWorkerFactory",{NULL, NULL, "ExpCloseWorkerFactory", "ExpDeleteWorkerFactory", NULL, NULL, NULL, NULL}},
+    {"PcwObject",               "PcwObject",  {NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"WmiGuid",                 "WmiGuid",    {NULL, NULL, NULL, "WmipDeleteMethod", NULL, "WmipDeleteMethod", NULL, NULL}},
+    {"EtwRegistration",         "EtwRegistration",{NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL}},
+    {"Session",                 "Session",    {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"Timer",                   "Timer",      {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"WindowStation",           "WindowStation",{NULL, "OpenProcedure", "CloseProcedure", "DeleteProcedure", "ParseProcedure", NULL, NULL, "OkayToCloseProcedure"}},
+    {"Profile",                 "Profile",    {NULL, NULL, NULL, "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"EtwConsumer",             "EtwConsumer",{NULL, "EtwpOpenRegistrationObject", "EtwpCloseRegistrationObject", "EtwpDeleteRegistrationObject", NULL, NULL, NULL, NULL}},
+    {"TmTx",                    "TmTx",       {NULL, NULL, "TmpCloseTransaction", "TmpDeleteTransaction", NULL, NULL, NULL, NULL}},
+    {"Callback",                "Callback",   {NULL, NULL, NULL, "FsRtlInitializeOplock", NULL, NULL, NULL, NULL}},
+    {"FilterConnectionPort",    "FilterConnectionPort",{NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"TmEn",                    "TmEn",       {NULL, NULL, "TmpCloseEnlistment", "TmpDeleteEnlistment", NULL, NULL, NULL, NULL}},
+    {"FilterCommunicationPort", "FilterCommunicationPort",{NULL, NULL, "CloseProcedure", "DeleteProcedure", NULL, NULL, NULL, NULL}},
+    {"PowerRequest",            "PowerRequest",{NULL, NULL, "PopClosePowerRequestObject", NULL, NULL, NULL, NULL, NULL}},
+    {"TmRm",                    "TmRm",       {NULL, "TmpOpenResourceManager", "TmpCloseResourceManager", "TmpDeleteResourceManager", NULL, NULL, NULL, NULL}},
+    {"ObpTypeObjectType",       "ObpTypeObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"ExEventObjectType",       "ExEventObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"ExSemaphoreObjectType",   "ExSemaphoreObjectType",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"Adapter",                 "Adapter",    {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"EventPair",               "EventPair",  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"KeyedEvent",              "KeyedEvent", {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"UserApcReserve",          "UserApcReserve",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"Controller",              "Controller", {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
+    {"IoCompletionReserve",     "IoCompletionReserve",{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}},
 };
 
-ULONG procedureRVAs[42][8];
+ULONG64 procedureVAs[42][8];
 
 DWORD RvaToFoa(PIMAGE_NT_HEADERS64 ntHeader, PIMAGE_SECTION_HEADER pSection, DWORD RVA) {
 	for (int i = 0; i < ntHeader->FileHeader.NumberOfSections; i++, pSection++) {
@@ -1308,7 +1308,7 @@ DWORD FoaToRva(PIMAGE_NT_HEADERS64 ntHeaders, PIMAGE_SECTION_HEADER pSection, DW
 }
 
 int QueryProcedures(ULONG NameRVA, PBYTE Buffer, PIMAGE_SECTION_HEADER pTargetSection, PIMAGE_SECTION_HEADER pSection, \
-					PIMAGE_NT_HEADERS64 ntHeaders, ULONG ObCreateObjectTypeExRVA, PBYTE pString, ULONG DataIndex){
+					PIMAGE_NT_HEADERS64 ntHeaders, ULONG ObCreateObjectTypeExRVA, PBYTE pString, ULONG DataIndex, ULONG64 KernelBase){
 	ULONG pTextStartFOA = pTargetSection->PointerToRawData;
 	ULONG pTextStartRVA = pTargetSection->VirtualAddress;
 	LONG pTextLoadOffset = pTextStartRVA - pTextStartFOA;
@@ -1521,7 +1521,7 @@ int QueryProcedures(ULONG NameRVA, PBYTE Buffer, PIMAGE_SECTION_HEADER pTargetSe
 	
 	for(int i=0;i<8;i++){
 		printf("0x%llX ", Procedures[i]);
-        procedureRVAs[DataIndex][i] = Procedures[i];
+        procedureVAs[DataIndex][i] = Procedures[i] + KernelBase;
 	}
 	printf("\n");
     return 0;
@@ -1663,26 +1663,20 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
     PBYTE pEnd = pStart + fileSize;
 	LONG uNameRVA = 0;
 
-    // 直接扫所有内存太慢了，使用位图加速
-    PBYTE pBitmap = (PBYTE)malloc(8192);
-    memset(pBitmap, 0, 8192);
-    for (int i=0;i<42;i++){
-        UINT16 Pattern = *(PUINT16)(procedureNames[i].ObjectName); // 取前2个字节
-        BM_SET(pBitmap, Pattern);
-    }
-
     // 构建特征
-    for (size_t i = 0; i < 42; ++i) {
-        const char *s = procedureNames[i].ObjectName;
+    size_t n = sizeof(procedureNames) / sizeof(procedureNames[0]);
+
+    for (size_t i = 0; i < n; ++i) {
+        const char *s = procedureNames[i].ShortName;
         size_t sl = 0;
-        while (s[sl]) ++sl;                         /* strlen */
+        while (s[sl]) ++sl;                         /* strlen(ShortName) */
 
         size_t total;
         if ((sl + 1) * 2 <= 16) {
-            total = 16;                             /* 名字 + null 放得进 16B */
+            total = 16;                             /* 短名 + null 放得进 16B */
         } else {
             total = 32;
-            if ((sl + 1) * 2 > 32) sl = 15;         /* 超长：截断到 15 字符 + null = 32B */
+            if ((sl + 1) * 2 > 32) sl = 15;         /* 超长截断到 15 字符 + null */
         }
 
         size_t k;
@@ -1699,215 +1693,40 @@ BOOL GetOriginDataFromNtOsKrnlImage() {
         procedureNames[i].Length = (UINT)total;
     }
 
-	for(PBYTE i=pStart;i<pEnd-0x20;i+=0x1){
-        if (*(i+1) != 0x00) continue;
-        if (*(i+3) != 0x00) continue;
-		PULONG Target = (PULONG)i;
-        
-        UINT16 key = (unsigned)i[0] | (unsigned)(i[2] << 8);
-        if (!BM_TEST(pBitmap, key)) continue;
+    // 直接扫所有内存太慢了，使用位图加速
+    PBYTE pBitmap = (PBYTE)malloc(8192);
+    memset(pBitmap, 0, 8192);
+    for (int i=0;i<42;i++){
+        UINT8* d = procedureNames[i].pattern;
+        UINT16 Pattern = (UINT16)(d[0] | (d[2] << 8)); // 取前2个字节
+        BM_SET(pBitmap, Pattern);
+    }
 
-        uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
+    PIMAGE_SECTION_HEADER pEachSection = pSection;
+	for (int s = 0; s < ntHeaders->FileHeader.NumberOfSections; s++, pEachSection++) {
+		if (pEachSection->SizeOfRawData == 0) continue;
 
-        for (int j=0;j<42;j++){
-            if (memcmp(Target, procedureNames[j].pattern, procedureNames[j].Length) == 0){
-                QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i, j);
+        PBYTE sectionStart = Buffer + pEachSection->PointerToRawData;
+        PBYTE sectionEnd = sectionStart + pEachSection->SizeOfRawData;
+
+        uNameRVA = sectionStart - Buffer - pEachSection->PointerToRawData + pEachSection->VirtualAddress;
+        for (PBYTE i = sectionStart; i < sectionEnd - 0x20; i += 0x1, uNameRVA ++) {
+            if (*(i+1) != 0x00) continue;
+            if (*(i+3) != 0x00) continue;
+            PULONG Target = (PULONG)i;
+            
+            UINT16 key = (unsigned)i[0] | (unsigned)(i[2] << 8);
+            if (!BM_TEST(pBitmap, key)) continue;
+
+            //uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
+
+            for (int j=0;j<42;j++){
+                if (memcmp(Target, procedureNames[j].pattern, procedureNames[j].Length) == 0){
+                    QueryProcedures(uNameRVA, Buffer, pEachSection, pSection, ntHeaders, ObCreateObjectTypeExRVA, i, j, qsinf.KernelBase);
+                }
             }
         }
-
-		/*if(memcmp(Target, L"Process", 16) == 0){
-			printf("Process: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Thread\x00\x9090", 16) == 0){
-			printf("Thread: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Job\x00\x9090\x9090\x9090\x9090", 16) == 0){
-			printf("Job: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Key\x00\x9090\x9090\x9090\x9090", 16) == 0){
-			printf("Key: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"File\x00\x9090\x9090\x9090", 16) == 0){
-			printf("File: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Device\x00\x9090", 16) == 0){
-			printf("Device: ", uNameRVA);
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Driver\x00\x9090", 16) == 0){
-			printf("Driver: ", uNameRVA);
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"IoCompletion\x00\x9090\x9090\x9090", 32) == 0){
-			printf("IoComplection: ", uNameRVA);
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Directory\x00\x9090\x9090\x9090\x9090\x9090\x9090", 32) == 0){
-			printf("Directory: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"SymbolicLink\x00\x9090\x9090", 16) == 0){
-			printf("SymbolicName: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Section\x00", 16) == 0){
-			printf("Section: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Mutant\x00\x9090", 16) == 0){
-			printf("Mutant: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Token\x00\x9090\x9090", 16) == 0){
-			printf("Token: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Desktop", 16) == 0){
-			printf("Desktop: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"DebugObject\x00\x9090\x9090\x9090\x9090", 32) == 0){
-			printf("DebugObject: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"TpWorkerFactory\x0000", 32) == 0){
-			printf("TpWorkerFactory: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Session", 16) == 0){
-			printf("Session: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Timer\x00\x9090\x9090", 16) == 0){
-			printf("Timer: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"WindowStation\x00\x9090\x9090", 32) == 0){
-			printf("WindowStation: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"Profile", 16) == 0){
-			printf("Profile: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"PowerRequest\x00\x9090\x9090\x9090", 32) == 0){
-			printf("PowerRequest: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"WmiGuid", 16) == 0){
-			printf("WmiGuid: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			break;
-		}*/
 	}
-	
-	/*for(PBYTE i=pStart;i<pEnd;i++){
-        if (*(i+1) != 0x00) continue;
-		PULONG Target = (PULONG)i;
-		if(memcmp(Target, L"WmiGuid", 16) == 0){
-			uNameRVA = i-Buffer-pINIT->PointerToRawData+pINIT->VirtualAddress;
-			printf("WmiGuid: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			break;
-		}
-	}*/
-	
-	/*pStart = Buffer + pPAGE->PointerToRawData;
-	pEnd = pStart + pPAGE->SizeOfRawData;
-	for(PBYTE i=pStart;i<pEnd;i+=16){
-        if (*(i+1) != 0x00) continue;
-        if (*(i+3) != 0x00) continue;
-		PULONG Target = (PULONG)i;
-        
-        UINT16 key = i[0] | (i[2] << 8);
-        if (!BM_TEST(pBitmap, key)) continue;
-
-		if(memcmp(Target, L"ALPC Port\x00\x9090\x9090\x9090\x9090\x9090\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pPAGE->PointerToRawData+pPAGE->VirtualAddress;
-			printf("ALPC Port: ");
-			QueryProcedures(uNameRVA, Buffer, pPAGE, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"EtwConsumer\x00\x9090\x9090\x9090\x9090", 32) == 0){
-			uNameRVA = i-Buffer-pPAGE->PointerToRawData+pPAGE->VirtualAddress;
-			printf("EtwConsumer: ");
-			QueryProcedures(uNameRVA, Buffer, pPAGE, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-	}
-	
-	pStart = Buffer + pRdata->PointerToRawData;
-	pEnd = pStart + pRdata->SizeOfRawData;
-	for(PBYTE i=pStart;i<pEnd;i+=16){
-        if (*(i+1) != 0x00) continue;
-        if (*(i+3) != 0x00) continue;
-		PULONG Target = (PULONG)i;
-        
-        if(memcmp(Target, L"Tm", 4)) continue;
-
-		if(memcmp(Target, L"TmTm\x00\x00\x00\x00", 16) == 0){
-			uNameRVA = i-Buffer-pRdata->PointerToRawData+pRdata->VirtualAddress;
-			printf("TmTm: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"TmTx\x00\x00\x00\x00", 16) == 0){
-			uNameRVA = i-Buffer-pRdata->PointerToRawData+pRdata->VirtualAddress;
-			printf("TmTx: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"TmEn\x00\x00\x00\x00", 16) == 0){
-			uNameRVA = i-Buffer-pRdata->PointerToRawData+pRdata->VirtualAddress;
-			printf("TmEn: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-		if(memcmp(Target, L"TmRm\x00\x00\x00\x00", 16) == 0){
-			uNameRVA = i-Buffer-pRdata->PointerToRawData+pRdata->VirtualAddress;
-			printf("TmRm: ");
-			QueryProcedures(uNameRVA, Buffer, pINIT, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-	}
-	
-	pStart = Buffer + pText->PointerToRawData;
-	pEnd = pStart + pText->SizeOfRawData;
-	for(PBYTE i=pStart;i<pEnd;i+=16){
-		PULONG Target = (PULONG)i;
-		if(memcmp(Target, L"EtwRegistration", 32) == 0){
-			uNameRVA = i-Buffer-pText->PointerToRawData+pText->VirtualAddress;
-			printf("EtwRegistration: ");
-			QueryProcedures(uNameRVA, Buffer, pText, pSection, ntHeaders, ObCreateObjectTypeExRVA, i);
-			continue;
-		}
-	}*/
 
 	VirtualFree(Buffer, 0, MEM_RELEASE);
 	return TRUE;

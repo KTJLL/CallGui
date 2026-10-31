@@ -14,6 +14,7 @@ extern const char* sssdtfunc[SSSDT_NUMBERS];
 
 typedef struct _PROCEDURE_NAMES {
     const char *ObjectName;
+    const char *ShortName;
     const char *ProcedureName[8];
     UINT8 pattern[32];
     UINT Length;
@@ -21,7 +22,7 @@ typedef struct _PROCEDURE_NAMES {
 } PROCEDURE_NAMES, *PPROCEDURE_NAMES;
 
 extern PROCEDURE_NAMES procedureNames[42];
-extern ULONG procedureRVAs[42][8];
+extern ULONG64 procedureVAs[42][8];
 
 /* 存放 n 个位需要多少字节 */
 #define BM_BYTES(n)         (((size_t)(n) + 7u) / 8u)
